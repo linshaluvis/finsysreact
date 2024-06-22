@@ -48,6 +48,12 @@ import AddItem from './components/company/items/AddItem';
 import ViewItem from './components/company/items/ViewItem';
 import ItemHistory from './components/company/items/ItemHistory';
 import EditItem from './components/company/items/EditItem';
+import Employee from './components/company/employee/employee';
+import AddEmployee from './components/company/employee/addemployee';
+import Employeeoverview from './components/company/employee/employeeoverview';
+
+
+
 
 function App() {
   return (
@@ -110,6 +116,12 @@ function App() {
             <Route path="/view_item/:itemId/" element={<ViewItem />}></Route>
             <Route path="/item_history/:itemId/" element={<ItemHistory />}></Route>
             <Route path="/edit_item/:itemId/" element={<EditItem />}></Route>
+            <Route path="/employee" element={<Employee />}></Route>
+            <Route path="/add_employee" element={<AddEmployee />}></Route>
+            <Route path="/employeeoverview/:itemId/" element={<Employeeoverview />}></Route>
+
+
+            
           </Route>
         </Routes>
       </BrowserRouter>

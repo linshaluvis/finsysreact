@@ -4459,3 +4459,305 @@ def Fin_updateItem(request):
             {"status": False, "message": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+        
+ 
+
+       
+
+@api_view(("GET",))
+def Fin_createemployee(request, id):
+    try:
+        data = Fin_Login_Details.objects.get(id=id)
+        if data.User_Type == 'Company':
+            cmp = Fin_Company_Details.objects.get(Login_Id=id)
+        else:
+            cmp = Fin_Staff_Details.objects.get(Login_Id = id).company_id
+        bloodgp = Employee_Blood_Group.objects.filter(company=cmp)
+        serializer = EmployeeBloodgroupSerializer(bloodgp, many=True)
+        return Response(
+            {"status": True, "bloodgp": serializer.data}, status=status.HTTP_200_OK
+        )
+    except Exception as e:
+        print(e)
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+        
+
+@api_view(("POST",))
+def Fin_createNewbloodgroup(request):
+    try:
+        s_id = request.data.get("Id")
+        data = Fin_Login_Details.objects.get(id=s_id)
+        print(data)
+        
+        if data.User_Type == "Company":
+            com = Fin_Company_Details.objects.get(Login_Id=s_id)
+        else:
+            staff = Fin_Staff_Details.objects.get(Login_Id=s_id)
+            com = staff.company_id
+        
+        request.data["Company"] = com.id
+        
+        serializer = EmployeeBloodgroupSerializer(data=request.data)
+        print(serializer)
+        
+        if serializer.is_valid():
+            Employee_Blood_Group.objects.create(
+                company=com,
+                login=data,
+                blood_group=serializer.validated_data['blood_group'],
+            )
+            print("yes")
+            return Response(
+                {"status": True, "data": serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                {"status": False, "data": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    except Fin_Login_Details.DoesNotExist:
+        return Response(
+            {"status": False, "message": "Login details not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    except Fin_Company_Details.DoesNotExist:
+        return Response(
+            {"status": False, "message": "Company details not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    except Fin_Staff_Details.DoesNotExist:
+        return Response(
+            {"status": False, "message": "Staff details not found."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    except Exception as e:
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+from django.views.decorators.csrf import csrf_exempt
+
+@api_view(("POST",))
+def employee_save(request):
+    if request.method == 'POST':
+        try:
+            s_id = request.data.get("Id")
+            datauser = Fin_Login_Details.objects.get(id=s_id)
+            
+            if datauser.User_Type == "Company":
+                com = Fin_Company_Details.objects.get(Login_Id=s_id)
+            else:
+                staff = Fin_Staff_Details.objects.get(Login_Id=s_id)
+                com = staff.company_id
+            
+            request.data["Company"] = com.id
+            data = request.POST
+            file = request.FILES.get('file')
+            image = request.FILES.get('image')
+
+            present_address = json.loads(data.get('Present_Address'))
+            permanent_address = json.loads(data.get('Permanent_Address'))
+
+            employee = Employee(
+                company=com,
+                login=datauser,
+                title=data.get('Title'),
+                first_name=data.get('First_Name'),
+                last_name=data.get('Last_Name'),
+                date_of_joining=data.get('Joining_Date'),
+                salary_effective_from=data.get('Salary_Date'),
+                employee_salary_type=data.get('Salary_Type'),
+                salary_amount=data.get('Salary_Amount'),
+                amount_per_hour=data.get('Amount_Per_Hour'),
+                total_working_hours=data.get('Working_Hours'),
+                alias=data.get('Alias'),
+                employee_number=data.get('Employee_Number'),
+                employee_designation=data.get('Designation'),
+                employee_current_location=data.get('Location'),
+                gender=data.get('Gender'),
+                date_of_birth=data.get('DOB'),
+                age=data.get('Age'),
+                blood_group=data.get('Blood_Group'),
+                mobile=data.get('Contact_Number'),
+                emergency_contact=data.get('Emergency_Contact_Number'),
+                employee_mail=data.get('Personal_Email'),
+                fathers_name_mothers_name=data.get('Parent_Name'),
+                spouse_name=data.get('Spouse_Name'),
+                upload_file=file,
+                provide_bank_details=data.get('Bank_Details'),
+                tds_applicable=data.get('TDS_Applicable'),
+                account_number=data.get('Account_Number'),
+                ifsc=data.get('IFSC'),
+                name_of_bank=data.get('Bank_Name'),
+                branch_name=data.get('Branch_Name'),
+                bank_transaction_type=data.get('Transaction_Type'),
+                tds_type=data.get('TDS_Type'),
+                percentage_amount=data.get('TDS_Amount'),
+                street=json.loads(data.get('Present_Address')).get('address'),
+                city=json.loads(data.get('Present_Address')).get('city'),
+                state=json.loads(data.get('Present_Address')).get('state'),
+                pincode=json.loads(data.get('Present_Address')).get('pincode'),
+                country=json.loads(data.get('Present_Address')).get('country'),
+                temporary_street=json.loads(data.get('Permanent_Address')).get('address'),
+                temporary_city=json.loads(data.get('Permanent_Address')).get('city'),
+                temporary_state=json.loads(data.get('Permanent_Address')).get('state'),
+                temporary_pincode=json.loads(data.get('Permanent_Address')).get('pincode'),
+                temporary_country=json.loads(data.get('Permanent_Address')).get('country'),
+                pan_number=data.get('PAN'),
+                income_tax_number=data.get('Income_Tax'),
+                aadhar_number=data.get('Aadhar'),
+                universal_account_number=data.get('UAN'),
+                pf_account_number=data.get('PF'),
+                pr_account_number=data.get('PR'),
+                upload_image=image,
+                employee_status='Active',
+            )
+            employee.save()
+            Fin_Items_Transaction_History.objects.create(
+                    Company=com,
+                    LoginDetails=datauser,
+                    item=Fin_Items.objects.get(id=serializer.data["id"]),
+                    action="Created",
+                )
+
+                return Response(
+                    {"status": True, "data": serializer.data}, status=status.HTTP_200_OK
+                )
+
+            return JsonResponse({'success': True, 'message': 'Employee saved successfully.'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method.'}, status=405)
+
+
+@api_view(("GET",))
+def Fin_fetchemployee(request, id):
+    try:
+        data = Fin_Login_Details.objects.get(id=id)
+        if data.User_Type == "Company":
+            com = Fin_Company_Details.objects.get(Login_Id=id)
+        else:
+            com = Fin_Staff_Details.objects.get(Login_Id=id).company_id
+
+        items = Employee.objects.filter(company=com)
+        serializer = EmployeeSerializer(items, many=True)
+        return Response(
+            {"status": True, "items": serializer.data}, status=status.HTTP_200_OK
+        )
+    except Exception as e:
+        print(e)
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+@api_view(("GET",))
+def Fin_fetchEmployeeDetails(request, id):
+    try:
+        item = Employee.objects.get(id=id)
+        hist = Employee_History.objects.filter(employee=item).last()
+        print(hist)
+        his = None
+        if hist:
+            his = {
+                "action": hist.action,
+                "date": hist.date,
+                "doneBy": hist.LoginDetails.First_name
+                + " "
+                + hist.LoginDetails.Last_name,
+            }
+        cmt = Employee_Comment.objects.filter(employee=item)
+        itemSerializer = EmployeeSerializer(item)
+        commentsSerializer = EmployeeCommentsSerializer(cmt, many=True)
+        return Response(
+            {
+                "status": True,
+                "item": itemSerializer.data,
+                "history": his,
+                "comments": commentsSerializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
+    except Exception as e:
+        print(e)
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(("POST",))
+def Fin_changeEmployeeStatus(request):
+    try:
+        itemId = request.data["id"]
+        data = Employee.objects.get(id=itemId)
+        data.employee_status = request.data["status"]
+        data.save()
+        return Response({"status": True}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+      
+
+@api_view(("POST",))
+def Fin_addEmployeeComment(request):
+    try:
+        id = request.data["Id"]
+        data = Fin_Login_Details.objects.get(id=id)
+        if data.User_Type == "Company":
+            com = Fin_Company_Details.objects.get(Login_Id=id)
+        else:
+            com = Fin_Staff_Details.objects.get(Login_Id=id).company_id
+
+        request.data["Company"] = com.id
+        serializer = EmployeeCommentsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"status": True, "data": serializer.data}, status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"status": False, "data": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+    except Exception as e:
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+@api_view(("DELETE",))
+def Fin_deleteemployee(request, id):
+    try:
+        item = Employee.objects.get(id=id)
+        item.delete()
+        return Response({"status": True}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(("DELETE",))
+def Fin_deleteemployeeComment(request, id):
+    try:
+        cmt = Employee_Comment.objects.get(id=id)
+        cmt.delete()
+        return Response({"status": True}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+

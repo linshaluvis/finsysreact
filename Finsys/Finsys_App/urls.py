@@ -80,6 +80,22 @@ urlpatterns = [
     path('check_accounts/',Fin_checkAccounts),
     path('create_new_account_from_items/',Fin_createNewAccountFromItems),
 
+    path('create_new_employee/<int:id>/',Fin_createemployee),
+    path('create_new_bloodgroup/',Fin_createNewbloodgroup),
+    path('fetch_employee/<int:id>/',Fin_fetchemployee),
+    path('employee_save/',employee_save),
+    path('fetch_employee_details/<int:id>/',Fin_fetchEmployeeDetails),
+    path('change_Employee_status/',Fin_changeEmployeeStatus),
+    path('Fin_addEmployeeComment/',Fin_addEmployeeComment),
+    path('delete_employee_comment/<int:id>/',Fin_deleteemployeeComment),
+    path('delete_employee/<int:id>/',Fin_deleteemployee),
+
+
+
+
+
+
+
 
 
 ]

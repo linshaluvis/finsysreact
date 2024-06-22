@@ -72,3 +72,20 @@ class ItemCommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fin_Items_Comments
         fields = '__all__'
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = '__all__'
+class EmployeeBloodgroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee_Blood_Group
+        fields = '__all__'
+class EmployeeHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee_History
+        fields = '__all__'
+
+class EmployeeCommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee_Comment
+        fields = '__all__'

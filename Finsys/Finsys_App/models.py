@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from datetime import date
+
 
 # Create your models here.
 
@@ -288,3 +290,83 @@ class Fin_CNotification(models.Model):
     date_created = models.DateField(auto_now_add=True,null=True)
     time=models.TimeField(auto_now_add=True,null=True)
     status = models.CharField(max_length=100,null=True,default='New')   
+    
+#employee
+class Employee(models.Model):
+    upload_file = models.FileField(upload_to='file/',blank=True) 
+    upload_image = models.ImageField(upload_to='media/',blank=True)
+    title = models.CharField(max_length=255,null=True,blank=True)
+    first_name = models.CharField(max_length=255,null=True,blank=True)
+    last_name = models.CharField(max_length=255,null=True,blank=True)
+    alias = models.CharField(max_length=255,null=True,blank=True)
+    employee_mail = models.EmailField(null=True,blank=True)
+    employee_number = models.CharField(max_length=255,null=True,blank=True)
+    employee_designation = models.CharField(max_length=255,null=True,blank=True)
+    function = models.CharField(max_length=255,null=True,blank=True)
+    employee_current_location = models.CharField(max_length=255,null=True,blank=True)
+    mobile = models.CharField(max_length=255,null=True,blank=True)
+    date_of_joining = models.DateField(null=True,blank=True)
+    employee_salary_type = models.CharField(max_length=255,null=True,blank=True)
+    salary_details = models.CharField(max_length=10,null=True,blank=True)
+    salary_effective_from = models.CharField(max_length=255,null=True,blank=True)
+
+    pay_head = models.CharField(max_length=255,null=True,blank=True)
+    salary_amount = models.FloatField(null=True,blank=True)
+    amount_per_hour = models.IntegerField(null=True,blank=True)
+    total_working_hours = models.IntegerField(null=True,blank=True)
+    gender = models.CharField(max_length=255,null=True,blank=True)
+    date_of_birth = models.DateField(null=True,blank=True)
+    age = models.IntegerField(null=True,blank=True)
+    blood_group = models.CharField(max_length=255,null=True,blank=True)
+    fathers_name_mothers_name = models.CharField(max_length=255,null=True,blank=True)
+    spouse_name = models.CharField(max_length=255,null=True,blank=True)
+    emergency_contact = models.CharField(max_length=255,null=True,blank=True)
+    provide_bank_details = models.CharField(max_length=255,null=True,blank=True)
+    account_number = models.CharField(max_length=255,null=True,blank=True)
+    ifsc = models.CharField(max_length=255,null=True,blank=True)
+    name_of_bank = models.CharField(max_length=255,null=True,blank=True)
+    branch_name = models.CharField(max_length=255,null=True,blank=True)
+    bank_transaction_type = models.CharField(max_length=255,null=True,blank=True)
+    tds_applicable = models.CharField(max_length=255,null=True,blank=True)
+    tds_type = models.CharField(max_length=255,null=True,blank=True)
+    percentage_amount = models.IntegerField(null=True,blank=True)
+    pan_number = models.CharField(max_length=255,null=True,blank=True)
+    income_tax_number = models.CharField(max_length=255,null=True,blank=True)
+    aadhar_number = models.CharField(max_length=255,null=True,blank=True)
+    universal_account_number = models.CharField(max_length=255,null=True,blank=True)
+    pf_account_number = models.CharField(max_length=255,null=True,blank=True)
+    pr_account_number = models.CharField(max_length=255,null=True,blank=True)
+    esi_number = models.CharField(max_length=255,null=True,blank=True)
+
+    street = models.CharField(max_length=255,null=True,blank=True)
+    city = models.CharField(max_length=255,null=True,blank=True)
+    state = models.CharField(max_length=255,null=True,blank=True)
+    pincode = models.CharField(max_length=255,null=True,blank=True)
+    country = models.CharField(max_length=255,null=True,blank=True)
+    temporary_street = models.CharField(max_length=255,null=True,blank=True)
+    temporary_city = models.CharField(max_length=255,null=True,blank=True)
+    temporary_state = models.CharField(max_length=255,null=True,blank=True)
+    temporary_pincode = models.CharField(max_length=255,null=True,blank=True)
+    temporary_country = models.CharField(max_length=255,null=True,blank=True)
+    employee_status = models.CharField(max_length=30,null=True,blank=True)
+    company = models.ForeignKey(Fin_Company_Details,on_delete=models.CASCADE,null=True,blank=True)
+    login = models.ForeignKey(Fin_Login_Details,on_delete=models.CASCADE,null=True,blank=True)
+
+class Employee_History(models.Model):
+    company = models.ForeignKey(Fin_Company_Details,on_delete=models.CASCADE,null=True,blank=True)
+    login = models.ForeignKey(Fin_Login_Details,on_delete=models.CASCADE,null=True,blank=True)
+    employee = models.ForeignKey(Employee,on_delete=models.CASCADE,blank=True,null=True)
+    date = models.DateField(null=True,blank=True)
+    action = models.CharField(max_length=255,null=True,blank=True)
+
+class Employee_Comment(models.Model):
+    employee = models.ForeignKey(Employee,on_delete=models.CASCADE,blank=True,null=True)
+    company = models.ForeignKey(Fin_Company_Details,on_delete=models.CASCADE,null=True,blank=True)
+    login = models.ForeignKey(Fin_Login_Details,on_delete=models.CASCADE,null=True,blank=True)
+    comment = models.CharField(max_length=255,null=True,blank=True)
+    date = models.DateField(default = date.today())
+    
+class Employee_Blood_Group(models.Model):
+    blood_group = models.CharField(max_length=255,null=True,blank=True)
+    company = models.ForeignKey(Fin_Company_Details,on_delete=models.CASCADE,null=True,blank=True)
+    login = models.ForeignKey(Fin_Login_Details,on_delete=models.CASCADE,null=True,blank=True)
