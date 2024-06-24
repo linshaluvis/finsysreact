@@ -203,18 +203,30 @@ const EmployeeForm = () => {
         
       axios.post(`${config.base_url}/employee_save/`, formData)
       
-        .then(response => {
-          console.log(response.data);
+      .then((res) => {
+        console.log("ITM RES=", res);
+        if (res.data.status) {
           Toast.fire({
             icon: "success",
-            title: "employee Created",
-          });        })
-        .catch(error => {
-          console.error('Error while saving employee details:', error);
-          // handle error, e.g. show error notification
+            title: "Employee Created",
+          });
+          navigate("/items");
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: res.data.message,
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("ERROR=", err);
+        const errorMessage = err.response?.data?.message || "An unexpected error occurred.";
+        Swal.fire({
+          icon: "error",
+          title: errorMessage,
         });
-    };
-    
+      });
+  };
    
 
   const handleChange = (e) => {

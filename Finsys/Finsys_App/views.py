@@ -4539,7 +4539,185 @@ def Fin_createNewbloodgroup(request):
             {"status": False, "message": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
+
+# @api_view(("POST",))
+# def employee_save(request):
+#     if request.method == 'POST':
+#         try:
+#             s_id = request.data.get("Id")
+#             datauser = Fin_Login_Details.objects.get(id=s_id)
+            
+#             if datauser.User_Type == "Company":
+#                 com = Fin_Company_Details.objects.get(Login_Id=s_id)
+#             else:
+#                 staff = Fin_Staff_Details.objects.get(Login_Id=s_id)
+#                 com = staff.company_id
+            
+#             request.data["Company"] = com.id
+#             data = request.POST
+#             file = request.FILES.get('file')
+#             image = request.FILES.get('image')
+#             title=data.get('Title'),
+#             first_name=data.get('First_Name'),
+#             last_name=data.get('Last_Name'),
+#             date_of_joining=data.get('Joining_Date'),
+#             salary_effective_from=data.get('Salary_Date'),
+#             employee_salary_type=data.get('Salary_Type'),
+#             salary_amount=data.get('Salary_Amount'),
+#             amount_per_hour=data.get('Amount_Per_Hour'),
+#             total_working_hours=data.get('Working_Hours'),
+#             alias=data.get('Alias'),
+#             employee_number=data.get('Employee_Number'),
+#             employee_designation=data.get('Designation'),
+#             employee_current_location=data.get('Location'),
+#             gender=data.get('Gender'),
+#             date_of_birth=data.get('DOB'),
+#             age=data.get('Age'),
+#             blood_group=data.get('Blood_Group'),
+#             mobile=data.get('Contact_Number'),
+#             emergency_contact=data.get('Emergency_Contact_Number'),
+#             employee_mail=data.get('Personal_Email'),
+#             fathers_name_mothers_name=data.get('Parent_Name'),
+#             spouse_name=data.get('Spouse_Name'),
+#             upload_file=file,
+#             provide_bank_details=data.get('Bank_Details'),
+#             tds_applicable=data.get('TDS_Applicable'),
+#             account_number=data.get('Account_Number'),
+#             ifsc=data.get('IFSC'),
+#             name_of_bank=data.get('Bank_Name'),
+#             branch_name=data.get('Branch_Name'),
+#             bank_transaction_type=data.get('Transaction_Type'),
+#             tds_type=data.get('TDS_Type'),
+#             percentage_amount=data.get('TDS_Amount'),
+#             street=json.loads(data.get('Present_Address')).get('address'),
+#             city=json.loads(data.get('Present_Address')).get('city'),
+#             state=json.loads(data.get('Present_Address')).get('state'),
+#             pincode=json.loads(data.get('Present_Address')).get('pincode'),
+#             country=json.loads(data.get('Present_Address')).get('country'),
+#             temporary_street=json.loads(data.get('Permanent_Address')).get('address'),
+#             temporary_city=json.loads(data.get('Permanent_Address')).get('city'),
+#             temporary_state=json.loads(data.get('Permanent_Address')).get('state'),
+#             temporary_pincode=json.loads(data.get('Permanent_Address')).get('pincode'),
+#             temporary_country=json.loads(data.get('Permanent_Address')).get('country'),
+#             pan_number=data.get('PAN'),
+#             income_tax_number=data.get('Income_Tax'),
+#             aadhar_number=data.get('Aadhar'),
+#             universal_account_number=data.get('UAN'),
+#             pf_account_number=data.get('PF'),
+#             pr_account_number=data.get('PR'),
+
+#             present_address = json.loads(data.get('Present_Address'))
+#             permanent_address = json.loads(data.get('Permanent_Address'))
+#             if Employee.objects.filter(employee_mail=employee_mail,mobile = mobile,employee_number=employee_number,company = com).exists():
+#                 return Response({"status": False, "message": " user exist"})
+        
+#             elif Employee.objects.filter(mobile = mobile,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " phone number exist"})
+
+#             elif Employee.objects.filter(emergency_contact = emergency_contact,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " emergency phone number exist"})
+            
+#             elif Employee.objects.filter(employee_mail=employee_mail,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " email exist"})
+            
+#             elif Employee.objects.filter(employee_number=employee_number,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " employee id exist"})
+            
+#             elif income_tax_number != '' and Employee.objects.filter(income_tax_number = income_tax_number,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " Income Tax Number exist"})
+            
+#             elif pf_account_number != '' and Employee.objects.filter(pf_account_number = pf_account_number,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " PF account number exist"})
+            
+#             elif aadhar_number != '' and Employee.objects.filter(aadhar_number = aadhar_number,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " Aadhar number exist"})
+            
+#             elif pan_number != '' and Employee.objects.filter(pan_number = pan_number,company_id = com.id).exists():
+#                 return Response({"status": False, "message": "PAN number exist"})
+            
+#             elif universal_account_number != '' and Employee.objects.filter(universal_account_number = universal_account_number,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " Universal account number exist"})
+            
+#             elif pr_account_number != '' and Employee.objects.filter(pr_account_number = pr_account_number,company_id = com.id).exists():
+#                 return Response({"status": False, "message": " PR account number exist"})
+            
+#             elif provide_bank_details.lower() == 'Yes':
+#                 if account_number != '' and Employee.objects.filter(account_number=account_number,company_id = com.id).exists():
+#                     return Response({"status": False, "message": " Bank account number already exist"})
+                    
+#             else:
+
+#                 employee = Employee(
+#                     company=com,
+#                     login=datauser,
+#                     title=data.get('Title'),
+#                     first_name=data.get('First_Name'),
+#                     last_name=data.get('Last_Name'),
+#                     date_of_joining=data.get('Joining_Date'),
+#                     salary_effective_from=data.get('Salary_Date'),
+#                     employee_salary_type=data.get('Salary_Type'),
+#                     salary_amount=data.get('Salary_Amount'),
+#                     amount_per_hour=data.get('Amount_Per_Hour'),
+#                     total_working_hours=data.get('Working_Hours'),
+#                     alias=data.get('Alias'),
+#                     employee_number=data.get('Employee_Number'),
+#                     employee_designation=data.get('Designation'),
+#                     employee_current_location=data.get('Location'),
+#                     gender=data.get('Gender'),
+#                     date_of_birth=data.get('DOB'),
+#                     age=data.get('Age'),
+#                     blood_group=data.get('Blood_Group'),
+#                     mobile=data.get('Contact_Number'),
+#                     emergency_contact=data.get('Emergency_Contact_Number'),
+#                     employee_mail=data.get('Personal_Email'),
+#                     fathers_name_mothers_name=data.get('Parent_Name'),
+#                     spouse_name=data.get('Spouse_Name'),
+#                     upload_file=file,
+#                     provide_bank_details=data.get('Bank_Details'),
+#                     tds_applicable=data.get('TDS_Applicable'),
+#                     account_number=data.get('Account_Number'),
+#                     ifsc=data.get('IFSC'),
+#                     name_of_bank=data.get('Bank_Name'),
+#                     branch_name=data.get('Branch_Name'),
+#                     bank_transaction_type=data.get('Transaction_Type'),
+#                     tds_type=data.get('TDS_Type'),
+#                     percentage_amount=data.get('TDS_Amount'),
+#                     street=json.loads(data.get('Present_Address')).get('address'),
+#                     city=json.loads(data.get('Present_Address')).get('city'),
+#                     state=json.loads(data.get('Present_Address')).get('state'),
+#                     pincode=json.loads(data.get('Present_Address')).get('pincode'),
+#                     country=json.loads(data.get('Present_Address')).get('country'),
+#                     temporary_street=json.loads(data.get('Permanent_Address')).get('address'),
+#                     temporary_city=json.loads(data.get('Permanent_Address')).get('city'),
+#                     temporary_state=json.loads(data.get('Permanent_Address')).get('state'),
+#                     temporary_pincode=json.loads(data.get('Permanent_Address')).get('pincode'),
+#                     temporary_country=json.loads(data.get('Permanent_Address')).get('country'),
+#                     pan_number=data.get('PAN'),
+#                     income_tax_number=data.get('Income_Tax'),
+#                     aadhar_number=data.get('Aadhar'),
+#                     universal_account_number=data.get('UAN'),
+#                     pf_account_number=data.get('PF'),
+#                     pr_account_number=data.get('PR'),
+#                     upload_image=image,
+#                     employee_status='Active',
+#                 )
+#                 employee.save()
+
+#                 history = Employee_History(
+#                 company=com,
+#                 login=datauser,
+#                 employee=employee,
+#                 date=date.today(),
+#                 action='Created'
+#                 )
+#                 history.save()
+
+#                 return JsonResponse({'success': True, 'message': 'Employee saved successfully.'})
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)}, status=500)
+#     else:
+#         return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
 @api_view(("POST",))
 def employee_save(request):
@@ -4559,80 +4737,107 @@ def employee_save(request):
             file = request.FILES.get('file')
             image = request.FILES.get('image')
 
+            # Create employee data
+            employee_data = {
+                'company': com,
+                'login': datauser,
+                'title': data.get('Title'),
+                'first_name': data.get('First_Name'),
+                'last_name': data.get('Last_Name'),
+                'date_of_joining': data.get('Joining_Date'),
+                'salary_effective_from': data.get('Salary_Date'),
+                'employee_salary_type': data.get('Salary_Type'),
+                'salary_amount': data.get('Salary_Amount'),
+                'amount_per_hour': data.get('Amount_Per_Hour'),
+                'total_working_hours': data.get('Working_Hours'),
+                'alias': data.get('Alias'),
+                'employee_number': data.get('Employee_Number'),
+                'employee_designation': data.get('Designation'),
+                'employee_current_location': data.get('Location'),
+                'gender': data.get('Gender'),
+                'date_of_birth': data.get('DOB'),
+                'age': data.get('Age'),
+                'blood_group': data.get('Blood_Group'),
+                'mobile': data.get('Contact_Number'),
+                'emergency_contact': data.get('Emergency_Contact_Number'),
+                'employee_mail': data.get('Personal_Email'),
+                'fathers_name_mothers_name': data.get('Parent_Name'),
+                'spouse_name': data.get('Spouse_Name'),
+                'upload_file': file,
+                'provide_bank_details': data.get('Bank_Details'),
+                'tds_applicable': data.get('TDS_Applicable'),
+                'account_number': data.get('Account_Number'),
+                'ifsc': data.get('IFSC'),
+                'name_of_bank': data.get('Bank_Name'),
+                'branch_name': data.get('Branch_Name'),
+                'bank_transaction_type': data.get('Transaction_Type'),
+                'tds_type': data.get('TDS_Type'),
+                'percentage_amount': data.get('TDS_Amount'),
+                'street': json.loads(data.get('Present_Address')).get('address'),
+                'city': json.loads(data.get('Present_Address')).get('city'),
+                'state': json.loads(data.get('Present_Address')).get('state'),
+                'pincode': json.loads(data.get('Present_Address')).get('pincode'),
+                'country': json.loads(data.get('Present_Address')).get('country'),
+                'temporary_street': json.loads(data.get('Permanent_Address')).get('address'),
+                'temporary_city': json.loads(data.get('Permanent_Address')).get('city'),
+                'temporary_state': json.loads(data.get('Permanent_Address')).get('state'),
+                'temporary_pincode': json.loads(data.get('Permanent_Address')).get('pincode'),
+                'temporary_country': json.loads(data.get('Permanent_Address')).get('country'),
+                'pan_number': data.get('PAN'),
+                'income_tax_number': data.get('Income_Tax'),
+                'aadhar_number': data.get('Aadhar'),
+                'universal_account_number': data.get('UAN'),
+                'pf_account_number': data.get('PF'),
+                'pr_account_number': data.get('PR'),
+                'upload_image': image,
+                'employee_status': 'Active',
+            }
+
             present_address = json.loads(data.get('Present_Address'))
             permanent_address = json.loads(data.get('Permanent_Address'))
 
-            employee = Employee(
+            if Employee.objects.filter(employee_mail=employee_data['employee_mail'], mobile=employee_data['mobile'], employee_number=employee_data['employee_number'], company=com).exists():
+                return JsonResponse({"status": False, "message": "User already exists."})
+            elif Employee.objects.filter(mobile=employee_data['mobile'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "Phone number already exists."})
+            elif Employee.objects.filter(emergency_contact=employee_data['emergency_contact'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "Emergency contact number already exists."})
+            elif Employee.objects.filter(employee_mail=employee_data['employee_mail'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "Email already exists."})
+            elif Employee.objects.filter(employee_number=employee_data['employee_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "Employee ID already exists."})
+            elif employee_data['income_tax_number'] != '' and Employee.objects.filter(income_tax_number=employee_data['income_tax_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "Income Tax Number already exists."})
+            elif employee_data['pf_account_number'] != '' and Employee.objects.filter(pf_account_number=employee_data['pf_account_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "PF Account Number already exists."})
+            elif employee_data['aadhar_number'] != '' and Employee.objects.filter(aadhar_number=employee_data['aadhar_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "Aadhar Number already exists."})
+            elif employee_data['pan_number'] != '' and Employee.objects.filter(pan_number=employee_data['pan_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "PAN Number already exists."})
+            elif employee_data['universal_account_number'] != '' and Employee.objects.filter(universal_account_number=employee_data['universal_account_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "UAN already exists."})
+            elif employee_data['pr_account_number'] != '' and Employee.objects.filter(pr_account_number=employee_data['pr_account_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "PR Account Number already exists."})
+            elif employee_data['provide_bank_details'] == 'Yes' and employee_data['account_number'] != '' and Employee.objects.filter(account_number=employee_data['account_number'], company_id=com.id).exists():
+                return JsonResponse({"status": False, "message": "Bank Account Number already exists."})
+
+            employee = Employee(**employee_data)
+            employee.save()
+
+            history = Employee_History(
                 company=com,
                 login=datauser,
-                title=data.get('Title'),
-                first_name=data.get('First_Name'),
-                last_name=data.get('Last_Name'),
-                date_of_joining=data.get('Joining_Date'),
-                salary_effective_from=data.get('Salary_Date'),
-                employee_salary_type=data.get('Salary_Type'),
-                salary_amount=data.get('Salary_Amount'),
-                amount_per_hour=data.get('Amount_Per_Hour'),
-                total_working_hours=data.get('Working_Hours'),
-                alias=data.get('Alias'),
-                employee_number=data.get('Employee_Number'),
-                employee_designation=data.get('Designation'),
-                employee_current_location=data.get('Location'),
-                gender=data.get('Gender'),
-                date_of_birth=data.get('DOB'),
-                age=data.get('Age'),
-                blood_group=data.get('Blood_Group'),
-                mobile=data.get('Contact_Number'),
-                emergency_contact=data.get('Emergency_Contact_Number'),
-                employee_mail=data.get('Personal_Email'),
-                fathers_name_mothers_name=data.get('Parent_Name'),
-                spouse_name=data.get('Spouse_Name'),
-                upload_file=file,
-                provide_bank_details=data.get('Bank_Details'),
-                tds_applicable=data.get('TDS_Applicable'),
-                account_number=data.get('Account_Number'),
-                ifsc=data.get('IFSC'),
-                name_of_bank=data.get('Bank_Name'),
-                branch_name=data.get('Branch_Name'),
-                bank_transaction_type=data.get('Transaction_Type'),
-                tds_type=data.get('TDS_Type'),
-                percentage_amount=data.get('TDS_Amount'),
-                street=json.loads(data.get('Present_Address')).get('address'),
-                city=json.loads(data.get('Present_Address')).get('city'),
-                state=json.loads(data.get('Present_Address')).get('state'),
-                pincode=json.loads(data.get('Present_Address')).get('pincode'),
-                country=json.loads(data.get('Present_Address')).get('country'),
-                temporary_street=json.loads(data.get('Permanent_Address')).get('address'),
-                temporary_city=json.loads(data.get('Permanent_Address')).get('city'),
-                temporary_state=json.loads(data.get('Permanent_Address')).get('state'),
-                temporary_pincode=json.loads(data.get('Permanent_Address')).get('pincode'),
-                temporary_country=json.loads(data.get('Permanent_Address')).get('country'),
-                pan_number=data.get('PAN'),
-                income_tax_number=data.get('Income_Tax'),
-                aadhar_number=data.get('Aadhar'),
-                universal_account_number=data.get('UAN'),
-                pf_account_number=data.get('PF'),
-                pr_account_number=data.get('PR'),
-                upload_image=image,
-                employee_status='Active',
+                employee=employee,
+                date=date.today(),
+                action='Created'
             )
-            employee.save()
-            Fin_Items_Transaction_History.objects.create(
-                    Company=com,
-                    LoginDetails=datauser,
-                    item=Fin_Items.objects.get(id=serializer.data["id"]),
-                    action="Created",
-                )
+            history.save()
 
-                return Response(
-                    {"status": True, "data": serializer.data}, status=status.HTTP_200_OK
-                )
-
-            return JsonResponse({'success': True, 'message': 'Employee saved successfully.'})
+            return JsonResponse({'status': True, 'message': 'Employee saved successfully.'})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'status': False, 'message': str(e)}, status=500)
     else:
-        return JsonResponse({'error': 'Invalid request method.'}, status=405)
+        return JsonResponse({'status': False, 'message': 'Invalid request method.'}, status=405)
 
 
 @api_view(("GET",))
@@ -4667,9 +4872,9 @@ def Fin_fetchEmployeeDetails(request, id):
             his = {
                 "action": hist.action,
                 "date": hist.date,
-                "doneBy": hist.LoginDetails.First_name
+                "doneBy": hist.employee.first_name
                 + " "
-                + hist.LoginDetails.Last_name,
+                + hist.employee.last_name,
             }
         cmt = Employee_Comment.objects.filter(employee=item)
         itemSerializer = EmployeeSerializer(item)
@@ -4696,7 +4901,9 @@ def Fin_changeEmployeeStatus(request):
     try:
         itemId = request.data["id"]
         data = Employee.objects.get(id=itemId)
+        S=request.data["status"]
         data.employee_status = request.data["status"]
+        print(S)
         data.save()
         return Response({"status": True}, status=status.HTTP_200_OK)
     except Exception as e:
@@ -4709,25 +4916,56 @@ def Fin_changeEmployeeStatus(request):
 @api_view(("POST",))
 def Fin_addEmployeeComment(request):
     try:
-        id = request.data["Id"]
+        id = request.data.get("Id")  # Retrieve 'Id' from request data
         data = Fin_Login_Details.objects.get(id=id)
         if data.User_Type == "Company":
             com = Fin_Company_Details.objects.get(Login_Id=id)
         else:
             com = Fin_Staff_Details.objects.get(Login_Id=id).company_id
 
-        request.data["Company"] = com.id
-        serializer = EmployeeCommentsSerializer(data=request.data)
+        # Prepare the data for the serializer
+        serializer_data = {
+            "comment": request.data.get("comments"),
+            "employee": request.data.get("item"),  # Ensure this matches the serializer field
+            "company": com.id,
+            "login": data.id,
+            # You can add 'date' or other fields if required
+        }
+
+        serializer = EmployeeCommentsSerializer(data=serializer_data)
+        print(serializer)
         if serializer.is_valid():
-            serializer.save()
+            Employee_Comment.objects.create(
+                company=com,
+                login=data,
+                comment=serializer.validated_data['comment'],
+                employee=serializer.validated_data['employee'],  # Ensure this matches the model field
+            )
+            print("yes")
             return Response(
-                {"status": True, "data": serializer.data}, status=status.HTTP_200_OK
+                {"status": True, "data": serializer.data},
+                status=status.HTTP_201_CREATED,
             )
         else:
             return Response(
-                {"status": False, "data": serializer.errors},
+                {"status": False, "message": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+    except Fin_Login_Details.DoesNotExist:
+        return Response(
+            {"status": False, "message": "Login details not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    except Fin_Company_Details.DoesNotExist:
+        return Response(
+            {"status": False, "message": "Company details not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+    except Fin_Staff_Details.DoesNotExist:
+        return Response(
+            {"status": False, "message": "Staff details not found"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
     except Exception as e:
         return Response(
             {"status": False, "message": str(e)},
@@ -4761,3 +4999,115 @@ def Fin_deleteemployeeComment(request, id):
         )
 
 
+@api_view(("GET",))
+def Fin_fetchemployeeHistory(request, id):
+    try:
+        item = Employee.objects.get(id=id)
+        hist = Employee_History.objects.filter(employee=item)
+        his = []
+        if hist:
+            for i in hist:
+                h = {
+                    "action": i.action,
+                    "date": i.date,
+                    "name": i.login.First_name + " " + i.login.Last_name,
+                }
+                his.append(h)
+        itemSerializer = EmployeeSerializer(item)
+        return Response(
+            {"status": True, "item": itemSerializer.data, "history": his},
+            status=status.HTTP_200_OK,
+        )
+    except Exception as e:
+        print(e)
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+
+@api_view(("GET",))
+def Fin_employTransactionPdf(request, itemId, id):
+    try:
+        data = Fin_Login_Details.objects.get(id=id)
+        if data.User_Type == "Company":
+            com = Fin_Company_Details.objects.get(Login_Id=id)
+        else:
+            com = Fin_Staff_Details.objects.get(Login_Id=id).company_id
+
+        item = Employee.objects.get(id=itemId)
+        
+
+
+        context = {"employ": item}
+
+        template_path = "company/Fin_employee_Pdf.html"
+        fname = "Employee_" + item.first_name
+        # return render(request, 'company/Fin_Item_Transaction_Pdf.html',context)
+        # Create a Django response object, and specify content_type as pdftemp_
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = f"attachment; filename = {fname}.pdf"
+        # find the template and render it.
+        template = get_template(template_path)
+        html = template.render(context)
+
+        # create a pdf
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        # if error then show some funny view
+        if pisa_status.err:
+            return HttpResponse("We had some errors <pre>" + html + "</pre>")
+        return response
+    except Exception as e:
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(("POST",))
+def Fin_share_employ_TransactionsToEmail(request):
+    try:
+        id = request.data["Id"]
+        data = Fin_Login_Details.objects.get(id=id)
+        if data.User_Type == "Company":
+            com = Fin_Company_Details.objects.get(Login_Id=id)
+        else:
+            com = Fin_Staff_Details.objects.get(Login_Id=id).company_id
+
+        itemId = request.data["itemId"]
+        item = Employee.objects.get(id=itemId)
+        emails_string = request.data["email_ids"]
+
+        # Split the string by commas and remove any leading or trailing whitespace
+        emails_list = [email.strip() for email in emails_string.split(",")]
+        email_message = request.data["email_message"]
+        # print(emails_list)
+
+        
+
+        context = {"employ": item}
+        template_path = "company/Fin_employee_Pdf.html"
+        template = get_template(template_path)
+
+        html = template.render(context)
+        result = BytesIO()
+        pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+        pdf = result.getvalue()
+        filename = f"Employee-{item.first_name}.pdf"
+        subject = f"Employee_{item.first_name}"
+        email = EmailMessage(
+            subject,
+            f"Hi,\nPlease find the attached Transaction details - Employee-{item.first_name}. \n{email_message}\n\n--\nRegards,\n{com.Company_name}\n{com.Address}\n{com.State} - {com.Country}\n{com.Contact}",
+            from_email=settings.EMAIL_HOST_USER,
+            to=emails_list,
+        )
+        email.attach(filename, pdf, "application/pdf")
+        email.send(fail_silently=False)
+
+        return Response({"status": True}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

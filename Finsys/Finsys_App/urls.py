@@ -89,6 +89,10 @@ urlpatterns = [
     path('Fin_addEmployeeComment/',Fin_addEmployeeComment),
     path('delete_employee_comment/<int:id>/',Fin_deleteemployeeComment),
     path('delete_employee/<int:id>/',Fin_deleteemployee),
+    path('fetch_employee_history/<int:id>/',Fin_fetchemployeeHistory),
+     path('employee_transaction_pdf/<int:itemId>/<int:id>/',Fin_employTransactionPdf),
+    path('share_employee_transactions_email/',Fin_share_employ_TransactionsToEmail),
+
 
 
 

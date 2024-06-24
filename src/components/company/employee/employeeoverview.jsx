@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import FinBase from "../FinBase";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -6,8 +6,12 @@ import axios from "axios";
 import config from "../../../functions/config";
 import Swal from "sweetalert2";
 import "../../styles/Items.css";
+import { createPopper } from '@popperjs/core';
+
 
 function ViewEmployee() {
+    const baseURL = 'http://127.0.0.1:8000';
+
     const ID = Cookies.get("Login_id");
     const { itemId } = useParams();
     const navigate = useNavigate();
@@ -125,9 +129,41 @@ function ViewEmployee() {
           });
       };
     
+     
+    
+    
+      function itemTransactionPdf() {
+        axios
+          .get(`${config.base_url}/employee_transaction_pdf/${itemId}/${ID}/`, {
+            responseType: "blob",
+          })
+          .then((res) => {
+            console.log("PDF RES=", res);
+    
+            const file = new Blob([res.data], { type: "application/pdf" });
+            const fileURL = URL.createObjectURL(file);
+            const a = document.createElement("a");
+            a.href = fileURL;
+            a.download = `EMPLOYEE_DETAILS_${itemId}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          })
+          .catch((err) => {
+            console.log("ERROR=", err);
+            if (err.response && err.response.data && !err.response.data.status) {
+              Swal.fire({
+                icon: "error",
+                title: `${err.response.data.message}`,
+              });
+            }
+          });
+      }
+    
+    
       function handleDeleteItem(id) {
         Swal.fire({
-          title: `Delete Item - ${itemDetails.name}?`,
+          title: `Delete  - ${itemDetails.first_name}?`,
           text: "All transactions will be deleted.!",
           icon: "warning",
           showCancelButton: true,
@@ -143,9 +179,9 @@ function ViewEmployee() {
     
                 Toast.fire({
                   icon: "success",
-                  title: "Item Deleted successfully",
+                  title: "Employee Deleted successfully",
                 });
-                navigate("/items");
+                navigate("/employee");
               })
               .catch((err) => {
                 console.log(err);
@@ -182,6 +218,119 @@ function ViewEmployee() {
           }
         });
       }
+
+
+      const [emailIds, setEmailIds] = useState("");
+      const [emailMessage, setEmailMessage] = useState("");
+    
+      function handleShareEmail(e) {
+        e.preventDefault();
+    
+        var emailsString = emailIds.trim();
+    
+        var emails = emailsString.split(",").map(function (email) {
+          return email.trim();
+        });
+    
+        var emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    
+        var invalidEmails = [];
+        if (emailsString === "") {
+          alert("Enter valid email addresses.");
+        } else {
+          for (var i = 0; i < emails.length; i++) {
+            var currentEmail = emails[i];
+    
+            if (currentEmail !== "" && !emailRegex.test(currentEmail)) {
+              invalidEmails.push(currentEmail);
+            }
+          }
+    
+          if (invalidEmails.length > 0) {
+            alert("Invalid emails. Please check!\n" + invalidEmails.join(", "));
+          } else {
+            // document.getElementById("share_to_email_form").submit();
+            var em = {
+              itemId: itemId,
+              Id: ID,
+              email_ids: emailIds,
+              email_message: emailMessage,
+            };
+            axios
+              .post(`${config.base_url}/share_employee_transactions_email/`, em)
+              .then((res) => {
+                if (res.data.status) {
+                  Toast.fire({
+                    icon: "success",
+                    title: "Shared via mail.",
+                  });
+                  setEmailIds("");
+                  setEmailMessage("");
+                }
+              })
+              .catch((err) => {
+                console.log("ERROR=", err);
+                if (
+                  err.response &&
+                  err.response.data &&
+                  !err.response.data.status
+                ) {
+                  Swal.fire({
+                    icon: "error",
+                    title: `${err.response.data.message}`,
+                  });
+                }
+              });
+          }
+        }
+      }
+      function printSection(sectionId) {
+        var transactionElements = document.querySelectorAll(
+          "#transaction, #transaction *"
+        );
+       
+    
+        var printContents = document.getElementById(sectionId).innerHTML;
+    
+        var printerDiv = document.createElement("div");
+        printerDiv.className = "printContainer";
+        printerDiv.innerHTML = printContents;
+    
+        document.body.appendChild(printerDiv);
+        document.body.classList.add("printingContent");
+    
+        window.print();
+    
+        document.body.removeChild(printerDiv);
+        document.body.classList.remove("printingContent");
+    
+       
+      }
+    
+      function printSheet() {
+        var divToPrint = document.getElementById("printContent");
+        var printWindow = window.open("", "", "height=700,width=1000");
+    
+        printWindow.document.write("<html><head><title></title>");
+        printWindow.document.write(`
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Black+Ops+One&family=Gluten:wght@100..900&family=Playball&display=swap" rel="stylesheet">
+        `);
+        printWindow.document.write("</head>");
+        printWindow.document.write("<body>");
+        printWindow.document.write(divToPrint.outerHTML);
+        printWindow.document.write("</body>");
+        printWindow.document.write("</html>");
+        printWindow.document.close();
+        printWindow.print();
+        printWindow.addEventListener('afterprint', function() {
+          printWindow.close();
+        });
+    
+      }
+      
     return (
         <>
           <FinBase />
@@ -192,7 +341,7 @@ function ViewEmployee() {
             <Link
               className="d-flex justify-content-end p-2"
               style={{ cursor: "pointer" }}
-              to="/items"
+              to="/employee"
             >
               <i
                 className="fa fa-times-circle text-white"
@@ -212,26 +361,15 @@ function ViewEmployee() {
                             borderRadius: "1vh",
                             backgroundColor: "rgba(22,37,50,255)",
                           }}
-                        //   onClick={overview}
                           id="overviewBtn"
                         >
                           Overview
                         </a>
-                        <a
-                          style={{
-                            padding: "10px",
-                            cursor: "pointer",
-                            borderRadius: "1vh",
-                          }}
-                        //   onClick={transaction}
-                          id="transactionBtn"
-                        >
-                          Transactions
-                        </a>
+                       
                       </div>
     
                       <div className="col-md-6 d-flex justify-content-end">
-                        {itemDetails.status == "Inactive" ? (
+                        {itemDetails.employee_status == "Inactive" ? (
                           <a
                              onClick={() => changeStatus("Active")}
                             id="statusBtn"
@@ -261,12 +399,11 @@ function ViewEmployee() {
                           </a>
                         )}
                         <a
-                        //   onClick={itemTransactionPdf}
+                           onClick={itemTransactionPdf}
                           className="ml-2 btn btn-outline-secondary text-grey fa fa-file"
                           role="button"
                           id="pdfBtn"
                           style={{
-                            display: "none",
                             height: "fit-content",
                             width: "fit-content",
                           }}
@@ -278,18 +415,16 @@ function ViewEmployee() {
                           role="button"
                           id="printBtn"
                           style={{
-                            display: "none",
                             height: "fit-content",
                             width: "fit-content",
                           }}
-                        //   onClick={() => printSheet()}
-                        >
+                          onClick={() => printSheet()}
+                          >
                           &nbsp;Print
                         </a>
                         <div
                           className="dropdown p-0 nav-item"
                           id="shareBtn"
-                          style={{ display: "none" }}
                         >
                           <li
                             className="ml-2 dropdown-toggle btn btn-outline-secondary text-grey fa fa-share-alt"
@@ -377,7 +512,7 @@ function ViewEmployee() {
                           &nbsp;Comment
                         </a>
                         <Link
-                          to={`/item_history/${itemId}/`}
+                          to={`/employee_history/${itemId}/`}
                           className="ml-2 btn btn-outline-secondary text-grey fa fa-history"
                           id="historyBtn"
                           role="button"
@@ -393,9 +528,9 @@ function ViewEmployee() {
                       className="card-title"
                       style={{ textTransform: "Uppercase" }}
                     >
-                      {itemDetails.name}
+                      EMPLOYEE OVERVIEW
                     </h3>
-                    {itemDetails.status == "Inactive" ? (
+                    {itemDetails.employee_status == "Inactive" ? (
                       <h6
                         className="blinking-text"
                         style={{ color: "red", width: "140px", fontWeight: "bold" }}
@@ -417,13 +552,14 @@ function ViewEmployee() {
                 </div>
               </div>
             </div>
-    
+            <div id="transaction" >
+            <div id="printContent">
             <div
               className="card card-registration card-registration-2"
               style={{ borderRadius: "15px" }}
             >
               <div className="card-body p-0">
-                <div id="overview">
+                <div id="overview" >
                   <div
                     className="row g-0"
                     style={{ marginLeft: "1px", marginRight: "1px" }}
@@ -457,34 +593,207 @@ function ViewEmployee() {
                           <span>{history.date}</span>
                         </div>
                       </div>
+                      <div>
+                    <label id="nameEmploy" hidden>
+                      {itemDetails.first_name}_{itemDetails.last_name}
+                    </label>
+                  </div>
+                  <div className="d-flex flex-column align-items-center text-center p-3">
+                  {itemDetails.upload_image && (
+                    <img
+                      className="rounded-circle"
+                      width="150px"
+                      height="150px"
+                      src={`${baseURL}${itemDetails.upload_image}`} 
+
+                      alt="Employee"
+                    />
+                  )}
+                  <span
+                    className="font-weight-bold"
+                    style={{ fontSize: 'x-large', textTransform: 'capitalize' }}
+                  >
+                    {itemDetails.title}. {itemDetails.first_name} {itemDetails.last_name}
+                  </span>
+                </div>
                       <div className="p-5 pt-2">
                         <center>
-                          <h4>ITEM DETAILS </h4>
+                          <h4>Personal Info </h4>
                         </center>
                         <hr />
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}> Type </label>
+                        {itemDetails.alias && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}> Alias </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.alias}
+                              </p>
+                            </div>
                           </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
+                        )}
+                               {itemDetails.employee_number && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}> Employee Number </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.employee_number}
+                              </p>
+                            </div>
                           </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              {itemDetails.item_type}
-                            </p>
+                        )}
+                         {itemDetails.date_of_joining && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}> Joining Date </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.date_of_joining}
+                              </p>
+                            </div>
                           </div>
-                        </div>
+                        )}
+                          {itemDetails.employee_designation && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}> Designation </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.employee_designation}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {itemDetails.date_of_birth && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}> Date Of birth </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.date_of_birth}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {itemDetails.gender && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}> Gender </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.gender}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {itemDetails.blood_group && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}> Blood Group </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.blood_group}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {itemDetails.mobile && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: 'white' }}>  Contact </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: 'white',
+                                  fontSize: '15px',
+                                  textTransform: 'uppercase',
+                                }}
+                              >
+                                {itemDetails.mobile}
+                              </p>
+                            </div>
+                          </div>
+                        )}
     
+                       {itemDetails.emergency_contact && (
                         <div className="row mb-3">
                           <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}> Unit </label>
+                            <label style={{ color: "white" }}> Emergency Contact </label>
                           </div>
                           <div className="col-4 d-flex justify-content-center">
                             <p>:</p>
@@ -497,18 +806,15 @@ function ViewEmployee() {
                                 textTransform: "Uppercase",
                               }}
                             >
-                              {itemDetails.unit}
+                              {itemDetails.emergency_contact}
                             </p>
                           </div>
                         </div>
-    
+                        )}
+                         {itemDetails.employee_mail && (
                         <div className="row mb-3">
                           <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>
-                              {itemDetails.item_type == "Goods"
-                                ? "HSN Code"
-                                : "SAC Code"}
-                            </label>
+                            <label style={{ color: "white" }}> Email </label>
                           </div>
                           <div className="col-4 d-flex justify-content-center">
                             <p>:</p>
@@ -521,158 +827,124 @@ function ViewEmployee() {
                                 textTransform: "Uppercase",
                               }}
                             >
-                              {itemDetails.hsn ? itemDetails.hsn : itemDetails.sac}
+                              {itemDetails.employee_mail}
                             </p>
                           </div>
                         </div>
-    
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>Tax Reference</label>
+                        )} {itemDetails.fathers_name_mothers_name && (
+                          <div className="row mb-3">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: "white" }}> Father/Mother's Name </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p
+                                style={{
+                                  color: "white",
+                                  fontSize: "15px",
+                                  textTransform: "Uppercase",
+                                }}
+                              >
+                                {itemDetails.fathers_name_mothers_name}
+                              </p>
+                            </div>
                           </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
-                          </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              {itemDetails.tax_reference}
-                            </p>
-                          </div>
-                        </div>
-    
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>
-                              Intra State Tax
-                            </label>
-                          </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
-                          </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              GST {itemDetails.intra_state_tax}%
-                            </p>
-                          </div>
-                        </div>
-    
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>
-                              Inter State Tax
-                            </label>
-                          </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
-                          </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              IGST {itemDetails.inter_state_tax}%
-                            </p>
-                          </div>
-                        </div>
-    
-                        {/* {% if itemDetails.inventory_account != "" %} */}
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>Inventory</label>
-                          </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
-                          </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              {itemDetails.inventory_account}
-                            </p>
-                          </div>
-                        </div>
-                        {/* {% endif %} */}
-    
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>Current</label>
-                          </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
-                          </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              {itemDetails.current_stock}
-                            </p>
-                          </div>
-                        </div>
-    
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>Stock Rate per</label>
-                          </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
-                          </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              {itemDetails.stock_unit_rate}
-                            </p>
-                          </div>
-                        </div>
-    
-                        <div className="row mb-3">
-                          <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>
-                              Min Stock to Maintain
-                            </label>
-                          </div>
-                          <div className="col-4 d-flex justify-content-center">
-                            <p>:</p>
-                          </div>
-                          <div className="col-4 d-flex justify-content-start">
-                            <p
-                              style={{
-                                color: "white",
-                                fontSize: "15px",
-                                textTransform: "Uppercase",
-                              }}
-                            >
-                              {itemDetails.min_stock}
-                            </p>
-                          </div>
-                        </div>
+                          )} {itemDetails.spouse_name && (
+                            <div className="row mb-3">
+                              <div className="col-4 d-flex justify-content-start">
+                                <label style={{ color: "white" }}> Spouse Name </label>
+                              </div>
+                              <div className="col-4 d-flex justify-content-center">
+                                <p>:</p>
+                              </div>
+                              <div className="col-4 d-flex justify-content-start">
+                                <p
+                                  style={{
+                                    color: "white",
+                                    fontSize: "15px",
+                                    textTransform: "Uppercase",
+                                  }}
+                                >
+                                  {itemDetails.spouse_name}
+                                </p>
+                              </div>
+                            </div>
+                            )} 
+                            {itemDetails.employee_current_location && (
+                              <div className="row mb-3">
+                                <div className="col-4 d-flex justify-content-start">
+                                  <label style={{ color: "white" }}> Current Location </label>
+                                </div>
+                                <div className="col-4 d-flex justify-content-center">
+                                  <p>:</p>
+                                </div>
+                                <div className="col-4 d-flex justify-content-start">
+                                  <p
+                                    style={{
+                                      color: "white",
+                                      fontSize: "15px",
+                                      textTransform: "Uppercase",
+                                    }}
+                                  >
+                                    {itemDetails.employee_current_location}
+                                  </p>
+                                </div>
+                              </div>
+                              )}
+                              {(itemDetails.street || itemDetails.city || itemDetails.state || itemDetails.pincode || itemDetails.country) && (
+                              <div className="row mb-3">
+                                <div className="col-4 d-flex justify-content-start">
+                                  <label style={{ color: 'white' }}> Permanent Address </label>
+                                </div>
+                                <div className="col-4 d-flex justify-content-center">
+                                  <p>:</p>
+                                </div>
+                                <div className="col-4 d-flex justify-content-start">
+                                  <p
+                                    style={{
+                                      color: 'white',
+                                      fontSize: '15px',
+                                      textTransform: 'uppercase',
+                                    }}
+                                  >
+                                     {itemDetails.street && `${itemDetails.street},`}<br></br>
+                                    {itemDetails.city && `${itemDetails.city},`}
+                                    {itemDetails.state && `${itemDetails.state},`}<br></br>
+                                    {itemDetails.pincode && `${itemDetails.pincode},`}
+                                    {itemDetails.country && itemDetails.country}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                        
+                     
+                        {(itemDetails.temporary_street || itemDetails.temporary_city || itemDetails.temporary_state || itemDetails.temporary_pincode || itemDetails.temporary_country) && (
+                              <div className="row mb-3">
+                                <div className="col-4 d-flex justify-content-start">
+                                  <label style={{ color: 'white' }}> Temporary Address</label>
+                                </div>
+                                <div className="col-4 d-flex justify-content-center">
+                                  <p>:</p>
+                                </div>
+                                <div className="col-4 d-flex justify-content-start">
+                                  <p
+                                    style={{
+                                      color: 'white',
+                                      fontSize: '15px',
+                                      textTransform: 'uppercase',
+                                    }}
+                                  >
+                                    {itemDetails.street && `${itemDetails.temporary_street},`}<br></br>
+                                    {itemDetails.city && `${itemDetails.temporary_city},`}
+                                    {itemDetails.state && `${itemDetails.temporary_state},`}<br></br>
+                                    {itemDetails.pincode && `${itemDetails.temporary_pincode},`}
+                                    {itemDetails.country && itemDetails.temporary_country}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
                       </div>
                     </div>
     
@@ -686,13 +958,13 @@ function ViewEmployee() {
                     >
                       <div className="px-5 py-4">
                         <center>
-                          <h4>PURCHASE INFORMATION </h4>
+                          <h4>SALARY INFORMATION </h4>
                         </center>
                         <hr />
-    
+                        {itemDetails.employee_salary_type && (
                         <div className="row mb-3">
                           <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>Purchase Price</label>
+                            <label style={{ color: "white" }}>Salary Type</label>
                           </div>
                           <div className="col-4 d-flex justify-content-center">
                             <p>:</p>
@@ -705,15 +977,19 @@ function ViewEmployee() {
                                 textTransform: "Uppercase",
                               }}
                             >
-                              INR : {itemDetails.purchase_price}
+                               {itemDetails.employee_salary_type}
                             </p>
                           </div>
                         </div>
-                        {itemDetails.purchase_account && (
+                        )}
+                        {itemDetails.employee_salary_type !== null && (
+                          <>
+                           {itemDetails.employee_salary_type === 'Time Based' && (
+                            <>
                           <div className="row mb-3">
                             <div className="col-4 d-flex justify-content-start">
                               <label style={{ color: "white" }}>
-                                Purchase Account
+                              Total Working Hours
                               </label>
                             </div>
                             <div className="col-4 d-flex justify-content-center">
@@ -727,17 +1003,14 @@ function ViewEmployee() {
                                   textTransform: "Uppercase",
                                 }}
                               >
-                                {itemDetails.purchase_account}
+                                {itemDetails.total_working_hours}
                               </p>
                             </div>
                           </div>
-                        )}
-                        {itemDetails.purchase_description && (
                           <div className="row mb-5">
                             <div className="col-4 d-flex justify-content-start">
                               <label style={{ color: "white" }}>
-                                {" "}
-                                Description{" "}
+                              Amount Per Hour
                               </label>
                             </div>
                             <div className="col-4 d-flex justify-content-center">
@@ -745,20 +1018,93 @@ function ViewEmployee() {
                             </div>
                             <div className="col-4 d-flex justify-content-start">
                               <p style={{ color: "white", fontSize: "15px" }}>
-                                {itemDetails.purchase_description}
+                                {itemDetails.amount_per_hour}
                               </p>
                             </div>
                           </div>
+                          </>
                         )}
-    
+                        <div className="row mb-3">
+                          <div className="col-4 d-flex justify-content-start">
+                            <label style={{ color: "white" }}>Employee Salary</label>
+                          </div>
+                          <div className="col-4 d-flex justify-content-center">
+                            <p>:</p>
+                          </div>
+                          <div className="col-4 d-flex justify-content-start">
+                            <p
+                              style={{
+                                color: "white",
+                                fontSize: "15px",
+                                textTransform: "Uppercase",
+                              }}
+                            >
+                               {itemDetails.salary_amount}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="row mb-3">
+                          <div className="col-4 d-flex justify-content-start">
+                            <label style={{ color: "white" }}>Salary Date Range</label>
+                          </div>
+                          <div className="col-4 d-flex justify-content-center">
+                            <p>:</p>
+                          </div>
+                          <div className="col-4 d-flex justify-content-start">
+                            <p
+                              style={{
+                                color: "white",
+                                fontSize: "15px",
+                                textTransform: "Uppercase",
+                              }}
+                            >
+                               {itemDetails.salary_effective_from}
+                            </p>
+                          </div>
+                        </div>
+                        </>
+                            )}
+                            {itemDetails.tds_type === 'Percentage' && (
+                              <div className="row mb-3">
+                                <div className="col-4 d-flex justify-content-start">
+                                  <label style={{ color: 'white' }}>TDS Percentage</label>
+                                </div>
+                                <div className="col-4 d-flex justify-content-center">
+                                  <p>:</p>
+                                </div>
+                                <div className="col-4 d-flex justify-content-start">
+                                  <p style={{ color: 'white', fontSize: '15px', textTransform: 'uppercase' }}>
+                                    {itemDetails.percentage_amount}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {itemDetails.tds_type === 'Amount' && (
+                              <div className="row mb-3">
+                                <div className="col-4 d-flex justify-content-start">
+                                  <label style={{ color: 'white' }}>TDS Amount</label>
+                                </div>
+                                <div className="col-4 d-flex justify-content-center">
+                                  <p>:</p>
+                                </div>
+                                <div className="col-4 d-flex justify-content-start">
+                                  <p style={{ color: 'white', fontSize: '15px', textTransform: 'uppercase' }}>
+                                    {itemDetails.percentage_amount}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          
                         <center>
-                          <h4>SALES INFORMATION </h4>
+                          <h4>STATUTORY INFORMATION </h4>
                         </center>
                         <hr />
-    
+                        {itemDetails.income_tax_number && (
+
                         <div className="row mb-3">
                           <div className="col-4 d-flex justify-content-start">
-                            <label style={{ color: "white" }}>Selling Price</label>
+                            <label style={{ color: "white" }}>Income Tax Number</label>
                           </div>
                           <div className="col-4 d-flex justify-content-center">
                             <p>:</p>
@@ -771,14 +1117,15 @@ function ViewEmployee() {
                                 textTransform: "Uppercase",
                               }}
                             >
-                              INR : {itemDetails.selling_price}
+                            {itemDetails.income_tax_number}
                             </p>
                           </div>
                         </div>
-                        {itemDetails.sales_account && (
+                        )}
+                        {itemDetails.aadhar_number && (
                           <div className="row mb-3">
                             <div className="col-4 d-flex justify-content-start">
-                              <label style={{ color: "white" }}>Sales Account</label>
+                              <label style={{ color: "white" }}>Aadhar Number</label>
                             </div>
                             <div className="col-4 d-flex justify-content-center">
                               <p>:</p>
@@ -791,17 +1138,16 @@ function ViewEmployee() {
                                   textTransform: "Uppercase",
                                 }}
                               >
-                                {itemDetails.sales_account}
+                                {itemDetails.aadhar_number}
                               </p>
                             </div>
                           </div>
                         )}
-                        {itemDetails.sales_description && (
+                        {itemDetails.universal_account_number && (
                           <div className="row mb-5">
                             <div className="col-4 d-flex justify-content-start">
                               <label style={{ color: "white" }}>
-                                {" "}
-                                Description{" "}
+                              Universal Account Number
                               </label>
                             </div>
                             <div className="col-4 d-flex justify-content-center">
@@ -809,74 +1155,137 @@ function ViewEmployee() {
                             </div>
                             <div className="col-4 d-flex justify-content-start">
                               <p style={{ color: "white", fontSize: "15px" }}>
-                                {itemDetails.sales_description}
+                                {itemDetails.universal_account_number}
                               </p>
                             </div>
                           </div>
+                        )}
+                         {itemDetails.pan_number && (
+                          <div className="row mb-5">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: "white" }}>
+                              PAN Number
+                              </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p style={{ color: "white", fontSize: "15px" }}>
+                                {itemDetails.pan_number}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                         {itemDetails.pf_account_number && (
+                          <div className="row mb-5">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: "white" }}>
+                              PF Account Number
+                              </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p style={{ color: "white", fontSize: "15px" }}>
+                                {itemDetails.pf_account_number}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                        {itemDetails.pr_account_number && (
+                          <div className="row mb-5">
+                            <div className="col-4 d-flex justify-content-start">
+                              <label style={{ color: "white" }}>
+                              PR Account Number
+                              </label>
+                            </div>
+                            <div className="col-4 d-flex justify-content-center">
+                              <p>:</p>
+                            </div>
+                            <div className="col-4 d-flex justify-content-start">
+                              <p style={{ color: "white", fontSize: "15px" }}>
+                                {itemDetails.pr_account_number}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                         {itemDetails.provide_bank_details === 'Yes' && (
+                          <>
+                          
+                            <center>
+                              <h4>Bank Details</h4>
+                            </center>
+                            <hr />
+
+                            <div className="row mb-3">
+                              <div className="col-4 d-flex justify-content-start">
+                                <label style={{ color: 'white' }}>Account Number</label>
+                              </div>
+                              <div className="col-4 d-flex justify-content-center">
+                                <p>:</p>
+                              </div>
+                              <div className="col-4 d-flex justify-content-start">
+                                <p style={{ color: 'white', fontSize: '15px', textTransform: 'uppercase' }}>
+                                  {itemDetails.account_number}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="row mb-3">
+                              <div className="col-4 d-flex justify-content-start">
+                                <label style={{ color: 'white' }}>IFSC</label>
+                              </div>
+                              <div className="col-4 d-flex justify-content-center">
+                                <p>:</p>
+                              </div>
+                              <div className="col-4 d-flex justify-content-start">
+                                <p style={{ color: 'white', fontSize: '15px', textTransform: 'uppercase' }}>
+                                  {itemDetails.ifsc}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="row mb-3">
+                              <div className="col-4 d-flex justify-content-start">
+                                <label style={{ color: 'white' }}>Bank Name</label>
+                              </div>
+                              <div className="col-4 d-flex justify-content-center">
+                                <p>:</p>
+                              </div>
+                              <div className="col-4 d-flex justify-content-start">
+                                <p style={{ color: 'white', fontSize: '15px', textTransform: 'uppercase' }}>
+                                  {itemDetails.name_of_bank}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="row mb-3">
+                              <div className="col-4 d-flex justify-content-start">
+                                <label style={{ color: 'white' }}>Branch Name</label>
+                              </div>
+                              <div className="col-4 d-flex justify-content-center">
+                                <p>:</p>
+                              </div>
+                              <div className="col-4 d-flex justify-content-start">
+                                <p style={{ color: 'white', fontSize: '15px', textTransform: 'uppercase' }}>
+                                  {itemDetails.branch_name}
+                                </p>
+                              </div>
+                            </div>
+                          </>
                         )}
                       </div>
                     </div>
                   </div>
                 </div>
     
-                <div id="transaction" style={{ display: "none" }}>
-                  <div id="printContent">
-                    <center>
-                      <h3 className="mt-3 text-uppercase">
-                        {itemDetails.name} - TRANSACTIONS
-                      </h3>
-                    </center>
-                    <div className="row mt-5">
-                      <div className="col d-flex justify-content-between px-5">
-                        <div className="item_data">
-                          <p>Selling Price: {itemDetails.selling_price}</p>
-                          <p>Purchase Price: {itemDetails.purchase_price}</p>
-                          <p>Min Stock to Maintain: {itemDetails.min_stock}</p>
-                        </div>
-                        <div className="item_data">
-                          <p>Stock Quantity: {itemDetails.current_stock}</p>
-                          <p>
-                            Stock Value: <span id="stockValue">0</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="table-responsive px-2">
-                      <table className="table table-bordered">
-                        <thead>
-                          <tr>
-                            <th className="text-center">Sl No.</th>
-                            <th className="text-center">Type</th>
-                            <th className="text-center">Name</th>
-                            <th className="text-center">Date</th>
-                            <th className="text-center">Quantity</th>
-                            <th className="text-center">Price</th>
-                            <th className="text-center">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {/* {% for i in transactions %} */}
-                          {/* <tr>
-                            <td style={{ textAlign: "center" }}>
-                              {"{forloop.counter}"}
-                            </td>
-                            <td style={{ textAlign: "center" }}>{"{i.type}"}</td>
-                            <td style={{ textAlign: "center" }}>{"{i.name}"}</td>
-                            <td style={{ textAlign: "center" }}>
-                              {"{i.date|date:'d-m-Y'}"}
-                            </td>
-                            <td style={{ textAlign: "center" }}>{"{i.qty}"}</td>
-                            <td style={{ textAlign: "center" }}>{"{i.price}"}</td>
-                            <td style={{ textAlign: "center" }}>{"{i.status}"}</td>
-                          </tr> */}
-                          {/* {% endfor %} */}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
+              
               </div>
             </div>
+          </div>
+          </div>
           </div>
           {/* <!-- Share To Email Modal --> */}
           <div className="modal fade" id="shareToEmail">
@@ -895,7 +1304,7 @@ function ViewEmployee() {
                 </div>
                 <div className="modal-body">
                   <form
-                    // onSubmit={handleShareEmail}
+                     onSubmit={handleShareEmail}
                     className="needs-validation px-1"
                     id="share_to_email_form"
                   >
@@ -908,8 +1317,8 @@ function ViewEmployee() {
                           id="emailIds"
                           rows="3"
                           placeholder="Multiple emails can be added by separating with a comma(,)."
-                        //   value={emailIds}
-                        //   onChange={(e) => setEmailIds(e.target.value)}
+                          value={emailIds}
+                           onChange={(e) => setEmailIds(e.target.value)}
                           required
                         />
                       </div>
@@ -921,8 +1330,8 @@ function ViewEmployee() {
                           className="form-control"
                           cols=""
                           rows="4"
-                        //   value={emailMessage}
-                        //   onChange={(e) => setEmailMessage(e.target.value)}
+                          value={emailMessage}
+                          onChange={(e) => setEmailMessage(e.target.value)}
                           placeholder="This message will be sent along with Bill details."
                         />
                       </div>
@@ -969,17 +1378,16 @@ function ViewEmployee() {
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-    
-                <form  className="px-1">
-                    {/* onSubmit={saveItemComment} */}
+                <form onSubmit={saveItemComment} className="px-1">
+
                   <div className="modal-body w-100">
                     <textarea
                       type="text"
                       className="form-control"
                       name="comment"
-                    //   value={comment}
+                      value={comment}
                       required
-                    //   onChange={(e) => setComment(e.target.value)}
+                     onChange={(e) => setComment(e.target.value)}
                     />
                     {comments.length > 0 ? (
                       <div className="container-fluid">
@@ -995,11 +1403,11 @@ function ViewEmployee() {
                             {comments.map((c, index) => (
                               <tr className="table-row">
                                 <td className="text-center">{index + 1}</td>
-                                <td className="text-center">{c.comments}</td>
+                                <td className="text-center">{c.comment}</td>
                                 <td className="text-center">
                                   <a
                                     className="text-danger"
-                                    // onClick={() => deleteComment(`${c.id}`)}
+                                    onClick={() => deleteComment(`${c.id}`)}
                                   >
                                     <i
                                       className="fa fa-trash"
