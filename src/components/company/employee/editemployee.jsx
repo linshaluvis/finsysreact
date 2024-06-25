@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import FinBase from "../FinBase";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import config from "../../../functions/config";
 import Swal from "sweetalert2";
 
-const EmployeeForm = () => {
+const EmployeeEdit = () => {
+    const { itemId } = useParams();
+
     const ID = Cookies.get("Login_id");
     const navigate = useNavigate();
     const [bloodGroups, setBloodGroups] = useState([]);
@@ -141,10 +143,87 @@ const EmployeeForm = () => {
     const [contact, setContact] = useState('');
     const [image, setimage] = useState('');
     
+const fetchItemDetails = () => {
+    axios
+      .get(`${config.base_url}/fetch_employee_details/${itemId}/`)
+      .then((res) => {
+        console.log("ITEM DATA=", res);
+        console.log("ok")
+        if (res.data.status) {
+          var itm = res.data.item;
+          setFirstName(itm.first_name)
+          setTitle(itm.title)
+          setLastName(itm.last_name)
+          setAlias(itm.alias)
+          setEmail(itm.employee_mail)
+          setEmployee_Number(itm.employee_number)
+          setDesignation(itm.employee_designation)
+          setCurrentLocation(itm.employee_current_location)
+          setJoiningDate(itm.date_of_joining)
+          setGender(itm.gender)
+          setDOB(itm.date_of_birth)
+          setAge(itm.age)
+          setBlood(itm.blood_group)
+          setparent(itm.fathers_name_mothers_name)
+          setSpouse(itm.spouse_name)
+          setNumber2(itm.emergency_contact)
+          setTransactionType(itm.bank_transaction_type)
+          setBankDetails(itm.provide_bank_details)
+          setAccountNumber(itm.account_number)
+          setIFSC(itm.ifsc)
+          setBankName(itm.name_of_bank)
+          setBranchName(itm.branch_name)
+          setTdsApplicable(itm.tds_applicable)
+          setTdsType(itm.tds_type)
+          
+          setTdsAmount(itm.percentage_amount)
+          setTdsPercentage(itm.percentage_amount)
+          setSalaryDate(itm.salary_effective_from)
+          setSalaryType(itm.employee_salary_type)
+          setSalaryAmount(itm.salary_amount)
+          setAmountPerHour(itm.amount_per_hour)
+          setWorkingHours(itm.total_working_hours)
+          setPAN(itm.pan_number)
+          setPR(itm.pr_account_number)
+          setUAN(itm.universal_account_number)
+          setPF(itm.pf_account_number)
+          setIncome_Tax(itm.income_tax_number)
+          setAadhar(itm.aadhar_number)
+          setContact(itm.mobile)
+        
+          setPresentAddress({
+            address: itm.street || '',
+            city: itm.city || '',
+            state: itm.state || '',
+            pincode: itm.pincode || '',
+            country: itm.country || ''
+          });
+          setPermanentAddress({
+            address: itm.temporary_street || '',
+            city: itm.temporary_city || '',
+            state: itm.temporary_state || '',
+            pincode: itm.temporary_pincode || '',
+            country: itm.temporary_country || ''
+          });        }
+      })
+      .catch((err) => {
+        console.log("ERROR=", err);
+        if (!err.response.data.status) {
+          Swal.fire({
+            icon: "error",
+            title: `${err.response.data.message}`,
+          });
+        }
+      });
+  };
+
     const handleImageChange= (e) => {
       const image = e.target.files[0];
       setimage(image);
     };
+    useEffect(() => {
+        fetchItemDetails();
+      }, []);
 
     // const handleSalaryTypeChange = (event) => {
     //   setSalaryType(event.target.value);
@@ -191,8 +270,6 @@ const EmployeeForm = () => {
       formData.append('Transaction_Type', transactionType);
       formData.append('TDS_Type', tdsType);
       formData.append('TDS_Amount', TDS_Amount);
-      formData.append('TDS_Percentage', TDS_Percentage);
-
       formData.append('Present_Address', JSON.stringify(presentAddress));
       formData.append('Permanent_Address', JSON.stringify(permanentAddress));
       formData.append('PAN', PAN);
@@ -507,7 +584,6 @@ useEffect(() => {
 
 
 
-
   
   return (
     <>
@@ -517,8 +593,8 @@ useEffect(() => {
         style={{ backgroundColor: "#2f516f", minHeight: "100vh" }}
       >
         <div className="d-flex justify-content-end mb-1">
-          <Link to={"/employee"}>
-            <i
+        <Link to={`/employeeoverview/${itemId}/`}>
+        <i
               className="fa fa-times-circle text-white mx-4 p-1"
               style={{ fontSize: "1.2rem", marginRight: "0rem !important" }}
             ></i>
@@ -528,7 +604,7 @@ useEffect(() => {
           <div className="row">
             <div className="col-md-12">
               <center>
-                <h2 className="mt-3">CREATE EMPLOYEE</h2>
+                <h2 className="mt-3">EDIT EMPLOYEE</h2>
               </center>
               <hr />
             </div>
@@ -587,17 +663,17 @@ useEffect(() => {
                 </div>
               </div>
               <div className="col-md-4">
-                      <label 
-                        htmlFor="Image" 
-                        className="ml-5 mt-5" 
-                        style={{ 
-                          cursor: 'pointer', 
-                          padding: '20% 35%', 
-                          backgroundImage: "url('static/assets/images/upload.png')", 
-                          backgroundRepeat: 'no-repeat', 
-                          backgroundSize: 'contain' 
-                        }}
-                      ></label>
+                       <label
+                                                htmlFor="Image"
+                                                className="ml-5 mt-5"
+                                                style={{
+                                                    cursor: 'pointer',
+                                                    padding: '20% 35%',
+                                                    backgroundImage: "url('/static/assets/images/upload.png')",
+                                                    backgroundRepeat: 'no-repeat',
+                                                    backgroundSize: 'contain'
+                                                }}
+                                            ></label>
                       <br />
                       <span className="ml-5">Upload Image</span>
                       <input 
@@ -605,11 +681,13 @@ useEffect(() => {
                         name="Image" 
                         id="Image" 
                         accept="image/*" 
+                        
                         style={{ display: 'none' }}
                         onChange={handleImageChange}
 
                       />
                     </div>
+                    
                   </div>                  
                   <div className="row">
                     <div className="col">
@@ -1281,4 +1359,4 @@ useEffect(() => {
   {/* <!-- Unit Create Modal --> */}
   
 
-export default EmployeeForm;
+export default EmployeeEdit;

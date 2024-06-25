@@ -52,6 +52,8 @@ import Employee from './components/company/employee/employee';
 import AddEmployee from './components/company/employee/addemployee';
 import Employeeoverview from './components/company/employee/employeeoverview';
 import EmployeeHistory from './components/company/employee/employeehistory';
+import EditEmployee from './components/company/employee/editemployee';
+
 
 
 
@@ -122,6 +124,8 @@ function App() {
             <Route path="/add_employee" element={<AddEmployee />}></Route>
             <Route path="/employeeoverview/:itemId/" element={<Employeeoverview />}></Route>
             <Route path="/employee_history/:itemId/" element={<EmployeeHistory />}></Route>
+            <Route path="/edit_employee/:itemId/" element={<EditEmployee />}></Route>
+
 
 
 

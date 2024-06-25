@@ -479,7 +479,7 @@ function ViewEmployee() {
                           </ul>
                         </div>
                         <Link
-                          to={`/edit_item/${itemId}/`}
+                          to={`/edit_employee/${itemId}/`}
                           className="ml-2 fa fa-pencil btn btn-outline-secondary text-grey"
                           id="editBtn"
                           role="button"
