@@ -92,6 +92,7 @@ urlpatterns = [
     path('fetch_employee_history/<int:id>/',Fin_fetchemployeeHistory),
      path('employee_transaction_pdf/<int:itemId>/<int:id>/',Fin_employTransactionPdf),
     path('share_employee_transactions_email/',Fin_share_employ_TransactionsToEmail),
+    path('update_employee/',Fin_updateemployee),
 
 
 

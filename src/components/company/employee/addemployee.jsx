@@ -1206,12 +1206,20 @@ useEffect(() => {
       <div className="row mt-5 mb-5">
         <div className="col-md-4"></div>
         <div className="col-md-4 d-flex justify-content-center">
-          <button className="btn btn-outline-secondary w-50 text-light" type="submit">
-            SAVE
-          </button>
-          <a href="/employee_list" className="btn btn-outline-secondary w-25 ml-1 text-light">
-            CANCEL
-          </a>
+        <button
+                        className="btn btn-outline-secondary text-light"
+                        type="submit"
+                        style={{ width: "50%", height: "fit-content" }}
+                      >
+                        SAVE
+                      </button>
+          <Link
+                        to={`/employee`}
+                        className="btn btn-outline-secondary ml-1 text-light"
+                        style={{ width: "fit-content", height: "fit-content" }}
+                      >
+                        CANCEL
+                      </Link>
         </div>
         <div className="col-md-4"></div>
       </div>

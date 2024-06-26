@@ -6,7 +6,6 @@ import axios from "axios";
 import config from "../../../functions/config";
 import Swal from "sweetalert2";
 import "../../styles/Items.css";
-import { createPopper } from '@popperjs/core';
 
 
 function ViewEmployee() {

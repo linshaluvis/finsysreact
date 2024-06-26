@@ -4727,125 +4727,6 @@ def employee_save(request):
             return JsonResponse({'error': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method.'}, status=405)
-# @api_view(("POST",))
-# def employee_save(request):
-#     if request.method == 'POST':
-#         try:
-#             s_id = request.data.get("Id")
-#             datauser = Fin_Login_Details.objects.get(id=s_id)
-            
-#             if datauser.User_Type == "Company":
-#                 com = Fin_Company_Details.objects.get(Login_Id=s_id)
-#             else:
-#                 staff = Fin_Staff_Details.objects.get(Login_Id=s_id)
-#                 com = staff.company_id
-            
-#             request.data["Company"] = com.id
-#             data = request.POST
-#             file = request.FILES.get('file')
-#             image = request.FILES.get('image')
-
-#             # Create employee data
-#             employee_data = {
-#                 'company': com,
-#                 'login': datauser,
-#                 'title': data.get('Title'),
-#                 'first_name': data.get('First_Name'),
-#                 'last_name': data.get('Last_Name'),
-#                 'date_of_joining': data.get('Joining_Date'),
-#                 'salary_effective_from': data.get('Salary_Date'),
-#                 'employee_salary_type': data.get('Salary_Type'),
-#                 'salary_amount': data.get('Salary_Amount'),
-#                 'amount_per_hour': data.get('Amount_Per_Hour'),
-#                 'total_working_hours': data.get('Working_Hours'),
-#                 'alias': data.get('Alias'),
-#                 'employee_number': data.get('Employee_Number'),
-#                 'employee_designation': data.get('Designation'),
-#                 'employee_current_location': data.get('Location'),
-#                 'gender': data.get('Gender'),
-#                 'date_of_birth': data.get('DOB'),
-#                 'age': data.get('Age'),
-#                 'blood_group': data.get('Blood_Group'),
-#                 'mobile': data.get('Contact_Number'),
-#                 'emergency_contact': data.get('Emergency_Contact_Number'),
-#                 'employee_mail': data.get('Personal_Email'),
-#                 'fathers_name_mothers_name': data.get('Parent_Name'),
-#                 'spouse_name': data.get('Spouse_Name'),
-#                 'upload_file': file,
-#                 'provide_bank_details': data.get('Bank_Details'),
-#                 'tds_applicable': data.get('TDS_Applicable'),
-#                 'account_number': data.get('Account_Number'),
-#                 'ifsc': data.get('IFSC'),
-#                 'name_of_bank': data.get('Bank_Name'),
-#                 'branch_name': data.get('Branch_Name'),
-#                 'bank_transaction_type': data.get('Transaction_Type'),
-#                 'tds_type': data.get('TDS_Type'),
-#                 'percentage_amount': data.get('TDS_Amount'),
-#                 'street': json.loads(data.get('Present_Address')).get('address'),
-#                 'city': json.loads(data.get('Present_Address')).get('city'),
-#                 'state': json.loads(data.get('Present_Address')).get('state'),
-#                 'pincode': json.loads(data.get('Present_Address')).get('pincode'),
-#                 'country': json.loads(data.get('Present_Address')).get('country'),
-#                 'temporary_street': json.loads(data.get('Permanent_Address')).get('address'),
-#                 'temporary_city': json.loads(data.get('Permanent_Address')).get('city'),
-#                 'temporary_state': json.loads(data.get('Permanent_Address')).get('state'),
-#                 'temporary_pincode': json.loads(data.get('Permanent_Address')).get('pincode'),
-#                 'temporary_country': json.loads(data.get('Permanent_Address')).get('country'),
-#                 'pan_number': data.get('PAN'),
-#                 'income_tax_number': data.get('Income_Tax'),
-#                 'aadhar_number': data.get('Aadhar'),
-#                 'universal_account_number': data.get('UAN'),
-#                 'pf_account_number': data.get('PF'),
-#                 'pr_account_number': data.get('PR'),
-#                 'upload_image': image,
-#                 'employee_status': 'Active',
-#             }
-
-#             present_address = json.loads(data.get('Present_Address'))
-#             permanent_address = json.loads(data.get('Permanent_Address'))
-
-#             if Employee.objects.filter(employee_mail=employee_data['employee_mail'], mobile=employee_data['mobile'], employee_number=employee_data['employee_number'], company=com).exists():
-#                 return JsonResponse({"status": False, "message": "User already exists."})
-#             elif Employee.objects.filter(mobile=employee_data['mobile'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "Phone number already exists."})
-#             elif Employee.objects.filter(emergency_contact=employee_data['emergency_contact'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "Emergency contact number already exists."})
-#             elif Employee.objects.filter(employee_mail=employee_data['employee_mail'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "Email already exists."})
-#             elif Employee.objects.filter(employee_number=employee_data['employee_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "Employee ID already exists."})
-#             elif employee_data['income_tax_number'] != '' and Employee.objects.filter(income_tax_number=employee_data['income_tax_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "Income Tax Number already exists."})
-#             elif employee_data['pf_account_number'] != '' and Employee.objects.filter(pf_account_number=employee_data['pf_account_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "PF Account Number already exists."})
-#             elif employee_data['aadhar_number'] != '' and Employee.objects.filter(aadhar_number=employee_data['aadhar_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "Aadhar Number already exists."})
-#             elif employee_data['pan_number'] != '' and Employee.objects.filter(pan_number=employee_data['pan_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "PAN Number already exists."})
-#             elif employee_data['universal_account_number'] != '' and Employee.objects.filter(universal_account_number=employee_data['universal_account_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "UAN already exists."})
-#             elif employee_data['pr_account_number'] != '' and Employee.objects.filter(pr_account_number=employee_data['pr_account_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "PR Account Number already exists."})
-#             elif employee_data['provide_bank_details'] == 'Yes' and employee_data['account_number'] != '' and Employee.objects.filter(account_number=employee_data['account_number'], company_id=com.id).exists():
-#                 return JsonResponse({"status": False, "message": "Bank Account Number already exists."})
-
-#             employee = Employee(**employee_data)
-#             employee.save()
-
-#             history = Employee_History(
-#                 company=com,
-#                 login=datauser,
-#                 employee=employee,
-#                 date=date.today(),
-#                 action='Created'
-#             )
-#             history.save()
-
-#             return JsonResponse({'status': True, 'message': 'Employee saved successfully.'})
-#         except Exception as e:
-#             return JsonResponse({'status': False, 'message': str(e)}, status=500)
-#     else:
-#         return JsonResponse({'status': False, 'message': 'Invalid request method.'}, status=405)
 
 
 @api_view(("GET",))
@@ -4880,9 +4761,9 @@ def Fin_fetchEmployeeDetails(request, id):
             his = {
                 "action": hist.action,
                 "date": hist.date,
-                "doneBy": hist.employee.first_name
+                "doneBy": hist.login.First_name
                 + " "
-                + hist.employee.last_name,
+                + hist.login.Last_name,
             }
         cmt = Employee_Comment.objects.filter(employee=item)
         itemSerializer = EmployeeSerializer(item)
@@ -5012,6 +4893,9 @@ def Fin_fetchemployeeHistory(request, id):
     try:
         item = Employee.objects.get(id=id)
         hist = Employee_History.objects.filter(employee=item)
+        print(item)
+        print(hist)
+        
         his = []
         if hist:
             for i in hist:
@@ -5114,6 +4998,155 @@ def Fin_share_employ_TransactionsToEmail(request):
         email.send(fail_silently=False)
 
         return Response({"status": True}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(
+            {"status": False, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+@api_view(["PUT"])
+def Fin_updateemployee(request):
+    try:
+        s_id = request.data["Id"]
+        data = Fin_Login_Details.objects.get(id=s_id)
+
+        if data.User_Type == "Company":
+            com = Fin_Company_Details.objects.get(Login_Id=s_id)
+        else:
+            com = Fin_Staff_Details.objects.get(Login_Id=s_id).company_id
+        
+        employee = Employee.objects.get(id=request.data['itemId'])
+
+        account_number = request.data['Account_Number']
+        ifsc = request.data['IFSC']
+        name_of_bank = request.data['Bank_Name']
+        branch_name = request.data['Branch_Name']
+        bank_transaction_type = request.data['Transaction_Type']
+        provide_bank_details = request.data['Bank_Details']
+        tds_applicable = request.data['TDS_Applicable']
+        tds_type = request.data['TDS_Type']
+        percentage_amount = request.data['TDS_Amount']
+        percentage_amount2 = request.data['TDS_Percentage']
+
+        present_address = json.loads(request.data['Present_Address'])
+        permanent_address = json.loads(request.data['Permanent_Address'])
+        salary_amount = request.data['Salary_Amount']
+        if tds_type == 'Percentage':
+            percentage_amount = request.data['TDS_Percentage']
+        else:
+            percentage_amount = request.data['TDS_Amount']
+        if not salary_amount:
+            salary_amount = None
+
+        # Handling amount per hour
+        amount_per_hour = request.data['Amount_Per_Hour']
+        if not amount_per_hour or amount_per_hour == '0':
+            amount_per_hour = 0
+
+        # Handling working hours
+        working_hours = request.data.get('Working_Hours')
+        if not working_hours or working_hours == '0':
+            working_hours = 0
+
+        # Extract fields from request data
+        employee_data = {
+            "company": com,
+            "login": data,
+            "title": request.data['Title'],
+            "first_name": request.data['First_Name'],
+            "last_name": request.data['Last_Name'],
+            "date_of_joining": request.data['Joining_Date'],
+            "salary_effective_from": request.data['Salary_Date'],
+            "employee_salary_type": request.data['Salary_Type'],
+            "salary_amount": request.data['Salary_Amount'],
+            "amount_per_hour": request.data['Amount_Per_Hour'],
+            "total_working_hours": request.data['Working_Hours'],
+            "alias": request.data['Alias'],
+            "employee_number": request.data['Employee_Number'],
+            "employee_designation": request.data['Designation'],
+            "employee_current_location": request.data['Location'],
+            "gender": request.data['Gender'],
+            "date_of_birth": request.data['DOB'],
+            "age": request.data['Age'],
+            "blood_group": request.data['Blood_Group'],
+            "mobile": request.data['Contact_Number'],
+            "emergency_contact": request.data['Emergency_Contact_Number'],
+            "employee_mail": request.data['Personal_Email'],
+            "fathers_name_mothers_name": request.data['Parent_Name'],
+            "spouse_name": request.data['Spouse_Name'],
+            "provide_bank_details": request.data['Bank_Details'],
+            "tds_applicable": request.data['TDS_Applicable'],
+            "account_number": request.data['Account_Number'],
+            "ifsc": request.data['IFSC'],
+            "name_of_bank": request.data['Bank_Name'],
+            "branch_name": request.data['Branch_Name'],
+            "bank_transaction_type": request.data['Transaction_Type'],
+            "tds_type": request.data['TDS_Type'],
+            "percentage_amount": percentage_amount,
+            "street": present_address.get('address'),
+            "city": present_address.get('city'),
+            "state": present_address.get('state'),
+            "pincode": present_address.get('pincode'),
+            "country": present_address.get('country'),
+            "temporary_street": permanent_address.get('address'),
+            "temporary_city": permanent_address.get('city'),
+            "temporary_state": permanent_address.get('state'),
+            "temporary_pincode": permanent_address.get('pincode'),
+            "temporary_country": permanent_address.get('country'),
+            "pan_number": request.data['PAN'],
+            "income_tax_number": request.data['Income_Tax'],
+            "aadhar_number": request.data['Aadhar'],
+            "universal_account_number": request.data['UAN'],
+            "pf_account_number": request.data['PF'],
+            "pr_account_number": request.data['PR'],
+            "employee_status": 'Active',
+        }
+
+        # Handle file uploads
+        if 'file' in request.FILES:
+            employee.upload_file = request.FILES['file']
+        if 'image' in request.FILES:
+            employee.upload_image = request.FILES['image']
+
+        # Uniqueness checks
+        emp = Employee.objects.exclude(id=employee.id).filter(company_id=com.id)
+        
+        if emp.filter(mobile=employee_data['mobile']).exists():
+            return JsonResponse({"status": False, "message": "Phone number already exists"})
+        elif emp.filter(emergency_contact=employee_data['emergency_contact']).exists():
+            return JsonResponse({"status": False, "message": "Emergency contact number already exists"})
+        elif emp.filter(employee_mail=employee_data['employee_mail']).exists():
+            return JsonResponse({"status": False, "message": "Email already exists"})
+        elif emp.filter(employee_number=employee_data['employee_number']).exists():
+            return JsonResponse({"status": False, "message": "Employee ID already exists"})
+        elif employee_data['income_tax_number'] and emp.filter(income_tax_number=employee_data['income_tax_number']).exists():
+            return JsonResponse({"status": False, "message": "Income Tax Number already exists"})
+        elif employee_data['pf_account_number'] and emp.filter(pf_account_number=employee_data['pf_account_number']).exists():
+            return JsonResponse({"status": False, "message": "PF account number already exists"})
+        elif employee_data['aadhar_number'] and emp.filter(aadhar_number=employee_data['aadhar_number']).exists():
+            return JsonResponse({"status": False, "message": "Aadhar number already exists"})
+        elif employee_data['pan_number'] and emp.filter(pan_number=employee_data['pan_number']).exists():
+            return JsonResponse({"status": False, "message": "PAN number already exists"})
+        elif employee_data['universal_account_number'] and emp.filter(universal_account_number=employee_data['universal_account_number']).exists():
+            return JsonResponse({"status": False, "message": "Universal account number already exists"})
+
+        # Update employee fields
+        for key, value in employee_data.items():
+            setattr(employee, key, value)
+
+        employee.save()
+        
+        history = Employee_History(
+            company=com,
+            employee=employee,
+            login=data,
+            date=date.today(),
+            action='Edited'
+        )
+        history.save()
+
+        return Response({"status": True, "message": "Employee updated successfully"}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(
             {"status": False, "message": str(e)},

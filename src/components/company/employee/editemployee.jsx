@@ -237,6 +237,7 @@ const fetchItemDetails = () => {
     
       const formData = new FormData();
       formData.append('Id', ID);
+      formData.append('itemId', itemId);
       formData.append('Title', Title);
       formData.append('First_Name', First_Name);
       formData.append('Last_Name', Last_Name);
@@ -270,6 +271,8 @@ const fetchItemDetails = () => {
       formData.append('Transaction_Type', transactionType);
       formData.append('TDS_Type', tdsType);
       formData.append('TDS_Amount', TDS_Amount);
+      formData.append('TDS_Percentage', TDS_Percentage);
+
       formData.append('Present_Address', JSON.stringify(presentAddress));
       formData.append('Permanent_Address', JSON.stringify(permanentAddress));
       formData.append('PAN', PAN);
@@ -279,14 +282,14 @@ const fetchItemDetails = () => {
       formData.append('PF', PF);
       formData.append('PR', PR);
         
-      axios.post(`${config.base_url}/employee_save/`, formData)
+      axios.put(`${config.base_url}/update_employee/`, formData)
       
       .then((res) => {
         console.log("ITM RES=", res);
         if (res.data.status) {
           Toast.fire({
             icon: "success",
-            title: "Employee Created",
+            title: "Employee updated",
           });
           navigate("/employee");
         }
@@ -934,7 +937,7 @@ useEffect(() => {
                     </div>
                     <div className="form-group col">
                       <label> Email</label>
-                      <input placeholder=" Email"  required name="Personal_Email"   pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                      <input placeholder=" Email"  required name="Personal_Email"   
  type="email" className="form-control" onChange={handleChange}
                         value={Email} />
                     </div>
@@ -1284,12 +1287,20 @@ useEffect(() => {
       <div className="row mt-5 mb-5">
         <div className="col-md-4"></div>
         <div className="col-md-4 d-flex justify-content-center">
-          <button className="btn btn-outline-secondary w-50 text-light" type="submit">
-            SAVE
-          </button>
-          <a href="/employee_list" className="btn btn-outline-secondary w-25 ml-1 text-light">
-            CANCEL
-          </a>
+        <button
+                        className="btn btn-outline-secondary text-light"
+                        type="submit"
+                        style={{ width: "50%", height: "fit-content" }}
+                      >
+                        SAVE
+                      </button>
+          <Link
+                        to={`/employeeoverview/${itemId}/`}
+                        className="btn btn-outline-secondary ml-1 text-light"
+                        style={{ width: "fit-content", height: "fit-content" }}
+                      >
+                        CANCEL
+                      </Link>
         </div>
         <div className="col-md-4"></div>
       </div>

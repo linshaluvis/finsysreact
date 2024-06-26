@@ -100,7 +100,7 @@ function ItemHistory() {
             <div id="history">
               <center>
                 <h3 className="mt-3 text-uppercase">
-                  {item.first_name} {item.last_name} - TRANSACTIONS HISTORY
+                  {item.first_name} {item.last_name} -  HISTORY
                 </h3>
               </center>
               <div className="table-responsive px-2">
