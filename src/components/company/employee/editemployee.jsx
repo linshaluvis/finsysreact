@@ -291,7 +291,7 @@ const fetchItemDetails = () => {
             icon: "success",
             title: "Employee updated",
           });
-          navigate("/employee");
+          navigate(`/employeeoverview/${itemId}/`);
         }
         if (!res.data.status && res.data.message != "") {
           Swal.fire({

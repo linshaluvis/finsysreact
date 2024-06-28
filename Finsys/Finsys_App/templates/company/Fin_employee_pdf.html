@@ -88,47 +88,137 @@
             <div>
                 <table id="table">
                     <tr ><center><label for="">Profile</label></center> </tr>
-                    <tr><th>Alias :</th><td>{{employ.alias}}</td></tr>
-                    <tr><th>Employee ID :</th><td>{{employ.employee_number}}</td></tr>
-                    <tr><th>Joining Date :</th><td>{{employ.date_of_joining}}</td></tr>
-                    <tr><th>Designation :</th><td>{{employ.employee_designation}}</td></tr>
-                    <tr><th>Gender :</th><td>{{employ.gender}}</td></tr>
-                    <tr><th>Current Location :</th><td>{{employ.employee_current_location}}</td></tr>
-                    <tr><th>Mobile Number : </th> <td>{{employ.mobile}}</td> </tr>
-                    <tr><th>Emergency Contact : </th> <td>{{employ.emergency_contact}}</td> </tr>
-                    <tr><th>Email ID : </th> <td>{{employ.employee_mail}}</td> </tr>
+                    {% if employ.alias %}
+                    <tr><th>Alias :</th><td>{{ employ.alias }}</td></tr>
+                    {% endif %}
+                    {% if employ.employee_number %}
+        <tr><th>Employee ID :</th><td>{{ employ.employee_number }}</td></tr>
+        {% endif %}
+        {% if employ.date_of_joining %}
+        <tr><th>Joining Date :</th><td>{{ employ.date_of_joining }}</td></tr>
+        {% endif %}
+        {% if employ.employee_designation %}
+        <tr><th>Designation :</th><td>{{ employ.employee_designation }}</td></tr>
+        {% endif %}
+        {% if employ.gender %}
+        <tr><th>Gender :</th><td>{{ employ.gender }}</td></tr>
+        {% endif %}
+        {% if employ.employee_current_location %}
+        <tr><th>Current Location :</th><td>{{ employ.employee_current_location }}</td></tr>
+        {% endif %}
+        {% if employ.mobile %}
+        <tr><th>Mobile Number :</th><td>{{ employ.mobile }}</td></tr>
+        {% endif %}
+        {% if employ.emergency_contact %}
+        <tr><th>Emergency Contact :</th><td>{{ employ.emergency_contact }}</td></tr>
+        {% endif %}
+        {% if employ.employee_mail %}
+        <tr><th>Email ID :</th><td>{{ employ.employee_mail }}</td></tr>
+        {% endif %}
+        {% if employ.street or employ.city %}
+
                     <tr><th>Address : </th> <td>{{employ.street}}, {{employ.city}}</td> </tr>
+                    {% endif %}
+                    {% if employ.pincode or employ.state %}
+
                     <tr><th> </th> <td>{{employ.pincode}}, {{employ.state}}</td> </tr>
+                    {% endif %}
                     <tr><th> </th> <td>{{employ.country}}.</td> </tr>
-                    <tr><th>Blood Group : </th> <td>{{employ.blood_group}}</td> </tr>
-                    <tr><th>Age : </th> <td>{{employ.age}}</td> </tr>
-                    <tr><th>DOB : </th> <td>{{employ.date_of_birth}}</td> </tr>
-                    <tr><th>Father's Name : </th> <td>{{employ.fathers_name_mothers_name}}</td> </tr>
-                    <tr><th>Spouse Name : </th> <td>{{employ.spouse_name}}</td> </tr>
+                    {% if employ.blood_group %}
+                    <tr><th>Blood Group :</th><td>{{ employ.blood_group }}</td></tr>
+                    {% endif %}
+                    {% if employ.age %}
+                    <tr><th>Age :</th><td>{{ employ.age }}</td></tr>
+                    {% endif %}
+                    {% if employ.date_of_birth %}
+                    <tr><th>DOB :</th><td>{{ employ.date_of_birth }}</td></tr>
+                    {% endif %}
+                    {% if employ.fathers_name_mothers_name %}
+                    <tr><th>Father's Name :</th><td>{{ employ.fathers_name_mothers_name }}</td></tr>
+                    {% endif %}
+                    {% if employ.spouse_name %}
+                    <tr><th>Spouse Name :</th><td>{{ employ.spouse_name }}</td></tr>
+                    {% endif %}
+                    {% if employ.temporary_street or employ.temporary_city %}
+
                     <tr><th>Temporary Address : </th> <td>{{employ.temporary_street}}, {{employ.temporary_city}}</td></tr>
+                    {% endif %}
+                    {% if employ.temporary_pincode or employ.temporary_state %}
+
                     <tr><th> </th> <td >{{employ.temporary_pincode}}, {{employ.temporary_state}}</td></tr>
+                    {% endif %}
+                    {% if employ.temporary_country %}
+
                     <tr><th> </th> <td >{{employ.temporary_country}}.</td></tr>
+                    {% endif %}
+
                     
                 </table><br><br>
                     
                 <table id="table2">
                     <tr ><center><label>Salary Info</label></center></tr>
-                    <tr><th>Employee Salary : </th><td>{{employ.salary_amount}}</td></tr> 
-                    <tr><th>Salary Date Range :</th><td>{{employ.salary_effective_from}}</td></tr>
-                    <tr><th>Salary Type :</th><td>{{employ.salary_details}}</td></tr>
-                    <tr><th>TDS Applicable : </th><td>{{employ.tds_applicable}}</td></tr>
-                    
+                    {% if employ.salary_amount %}
+        <tr><th>Employee Salary :</th><td>{{ employ.salary_amount }}</td></tr>
+        {% endif %}
+        {% if employ.salary_effective_from %}
+        <tr><th>Salary Date Range :</th><td>{{ employ.salary_effective_from }}</td></tr>
+        {% endif %}
+        {% if employ.salary_details %}
+        <tr><th>Salary Type :</th><td>{{ employ.salary_details }}</td></tr>
+        {% endif %}
+        {% if employ.tds_applicable %}
+        <tr><th>TDS Applicable :</th><td>{{ employ.tds_applicable }}</td></tr>
+        {% endif %}
+        {% if employ.tds_type %}
+        <tr><th>TDS Type :</th><td>{{ employ.tds_type }}</td></tr>
+        {% endif %}
+        {% if employ.percentage_amount %}
+        <tr><th>Percentage Amount :</th><td>{{ employ.percentage_amount }}</td></tr>
+        {% endif %}
                 </table><br><br>
 
                 <table id="table3">
                     <tr><center><label>Statutory Info</label></center></tr>
-                    <tr><th>Income Tax Number : </th><td>{{employ.income_tax_number}}</td></tr> 
-                    <tr><th>Aadhar Number :</th><td>{{employ.aadhar_number}}</td></tr>
-                    <tr><th>Universal Account Number :</th><td>{{employ.universal_account_number}}</td></tr>
-                    <tr><th>PAN Number : </th><td>{{employ.pan_number}}</td></tr>
-                    <tr><th>PF Account Number :</th><td>{{employ.pf_account_number}}</td></tr>
-                    <tr><th>PR Account Number : </th><td>{{employ.pr_account_number}}</td></tr>
+                    {% if employ.income_tax_number %}
+        <tr><th>Income Tax Number :</th><td>{{ employ.income_tax_number }}</td></tr>
+        {% endif %}
+        {% if employ.aadhar_number %}
+        <tr><th>Aadhar Number :</th><td>{{ employ.aadhar_number }}</td></tr>
+        {% endif %}
+        {% if employ.universal_account_number %}
+        <tr><th>Universal Account Number :</th><td>{{ employ.universal_account_number }}</td></tr>
+        {% endif %}
+        {% if employ.pan_number %}
+        <tr><th>PAN Number :</th><td>{{ employ.pan_number }}</td></tr>
+        {% endif %}
+        {% if employ.pf_account_number %}
+        <tr><th>PF Account Number :</th><td>{{ employ.pf_account_number }}</td></tr>
+        {% endif %}
+        {% if employ.pr_account_number %}
+        <tr><th>PR Account Number :</th><td>{{ employ.pr_account_number }}</td></tr>
+        {% endif %}
                 </table>
+                <table id="table4" class="table table-bordered">
+                  <tr><th colspan="2" class="text-center"><label>Bank Details</label></th></tr>
+                  {% if employ.provide_bank_details %}
+                  <tr><th>Provide Bank Details :</th><td>{{ employ.provide_bank_details }}</td></tr>
+                  {% endif %}
+                  {% if employ.account_number %}
+                  <tr><th>Account Number :</th><td>{{ employ.account_number }}</td></tr>
+                  {% endif %}
+                  {% if employ.ifsc %}
+                  <tr><th>IFSC :</th><td>{{ employ.ifsc }}</td></tr>
+                  {% endif %}
+                  {% if employ.name_of_bank %}
+                  <tr><th>Name of Bank :</th><td>{{ employ.name_of_bank }}</td></tr>
+                  {% endif %}
+                  {% if employ.branch_name %}
+                  <tr><th>Branch Name :</th><td>{{ employ.branch_name }}</td></tr>
+                  {% endif %}
+                  {% if employ.bank_transaction_type %}
+                  <tr><th>Bank Transaction Type :</th><td>{{ employ.bank_transaction_type }}</td></tr>
+                  {% endif %}
+              </table>
 
 
                 

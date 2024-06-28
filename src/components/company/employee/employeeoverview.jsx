@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import config from "../../../functions/config";
 import Swal from "sweetalert2";
-import "../../styles/Items.css";
+ import "../../styles/employee.css";
 
 
 function ViewEmployee() {
@@ -137,13 +137,14 @@ function ViewEmployee() {
             responseType: "blob",
           })
           .then((res) => {
-            console.log("PDF RES=", res);
-    
+            alert("ok")
+            console.log("PDF RES=", res.data);
+      
             const file = new Blob([res.data], { type: "application/pdf" });
             const fileURL = URL.createObjectURL(file);
             const a = document.createElement("a");
             a.href = fileURL;
-            a.download = `EMPLOYEE_DETAILS_${itemId}.pdf`;
+            a.download = `EMPLOYEE_DETAILS.pdf`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -158,7 +159,6 @@ function ViewEmployee() {
             }
           });
       }
-    
     
       function handleDeleteItem(id) {
         Swal.fire({
@@ -312,11 +312,26 @@ function ViewEmployee() {
     
         printWindow.document.write("<html><head><title></title>");
         printWindow.document.write(`
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-            <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Black+Ops+One&family=Gluten:wght@100..900&family=Playball&display=swap" rel="stylesheet">
-        `);
+          <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=Agbalumo&family=Black+Ops+One&family=Gluten:wght@100..900&family=Playball&display=swap" rel="stylesheet">
+          <style>
+             
+              .printContent {
+                  color: #0b0303;
+                  background-color: #f9f9f9;
+                  padding: 20px;
+                  border: 1px solid #ccc;
+              }
+              .printContent h1 {
+                  color: #020910;
+              }
+              .printContent p {
+                  color: #0d0202;
+              }
+          </style>
+      `);
         printWindow.document.write("</head>");
         printWindow.document.write("<body>");
         printWindow.document.write(divToPrint.outerHTML);
@@ -603,7 +618,7 @@ function ViewEmployee() {
                       className="rounded-circle"
                       width="150px"
                       height="150px"
-                      src={`${baseURL}${itemDetails.upload_image}`} 
+                      src={`${config.base_url}/${itemDetails.upload_image}`} 
 
                       alt="Employee"
                     />

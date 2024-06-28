@@ -290,6 +290,7 @@ function ViewItem() {
       .get(`${config.base_url}/item_transaction_pdf/${itemId}/${ID}/`, {
         responseType: "blob",
       })
+      
       .then((res) => {
         console.log("PDF RES=", res);
 

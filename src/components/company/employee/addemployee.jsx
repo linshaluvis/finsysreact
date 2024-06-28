@@ -856,7 +856,7 @@ useEffect(() => {
                     </div>
                     <div className="form-group col">
                       <label> Email</label>
-                      <input placeholder=" Email"  required name="Personal_Email"   pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                      <input placeholder=" Email"  required name="Personal_Email"   
  type="email" className="form-control" onChange={handleChange}
                         value={Email} />
                     </div>

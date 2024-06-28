@@ -4680,12 +4680,9 @@ def employee_save(request):
                 "upload_image": image,
                 "employee_status": 'Active',
             }
-
-            if employee_data["provide_bank_details"] == 'Yes':
-                
-                if employee_data["account_number"] and Employee.objects.filter(account_number=employee_data["account_number"], company_id=com.id).exists():
-                    return JsonResponse({"status": False, "message": "Bank account number already exists"})
-            elif Employee.objects.filter(employee_mail=employee_data["employee_mail"], mobile=employee_data["mobile"], employee_number=employee_data["employee_number"], company=com).exists():
+            A=employee_data["provide_bank_details"]
+            print(A)
+            if Employee.objects.filter(employee_mail=employee_data["employee_mail"], mobile=employee_data["mobile"], employee_number=employee_data["employee_number"], company=com).exists():
                 return JsonResponse({"status": False, "message": "User already exists"})
             elif Employee.objects.filter(mobile=employee_data["mobile"], company_id=com.id).exists():
                 return JsonResponse({"status": False, "message": "Phone number already exists"})
@@ -4917,9 +4914,7 @@ def Fin_fetchemployeeHistory(request, id):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-
-
-@api_view(("GET",))
+@api_view(["GET"])
 def Fin_employTransactionPdf(request, itemId, id):
     try:
         data = Fin_Login_Details.objects.get(id=id)
@@ -4929,32 +4924,59 @@ def Fin_employTransactionPdf(request, itemId, id):
             com = Fin_Staff_Details.objects.get(Login_Id=id).company_id
 
         item = Employee.objects.get(id=itemId)
-        
-
-
+        print(item)
         context = {"employ": item}
 
         template_path = "company/Fin_employee_Pdf.html"
-        fname = "Employee_" + item.first_name
-        # return render(request, 'company/Fin_Item_Transaction_Pdf.html',context)
-        # Create a Django response object, and specify content_type as pdftemp_
+        fname = f"Employee"  # You might want to append the item ID to the filename
+
         response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = f"attachment; filename = {fname}.pdf"
-        # find the template and render it.
+        response["Content-Disposition"] = f'attachment; filename="{fname}.pdf"'
+
         template = get_template(template_path)
         html = template.render(context)
 
-        # create a pdf
         pisa_status = pisa.CreatePDF(html, dest=response)
-        # if error then show some funny view
         if pisa_status.err:
-            return HttpResponse("We had some errors <pre>" + html + "</pre>")
+            return HttpResponse(f"We had some errors <pre>{html}</pre>")
+
         return response
-    except Exception as e:
-        return Response(
-            {"status": False, "message": str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+
+    except Fin_Login_Details.DoesNotExist:
+        return HttpResponse("Login details not found.", status=404)
+    except Fin_Company_Details.DoesNotExist:
+        return HttpResponse("Company details not found.", status=404)
+    except Fin_Staff_Details.DoesNotExist:
+        return HttpResponse("Staff details not found.", status=404)
+    except Employee.DoesNotExist:
+        return HttpResponse("Employee not found.", status=404)
+ 
+
+# @api_view(("GET",))
+# def Fin_employTransactionPdf(request, itemId, id):
+#         data = Fin_Login_Details.objects.get(id=id)
+#         if data.User_Type == "Company":
+#             com = Fin_Company_Details.objects.get(Login_Id=id)
+#         else:
+#             com = Fin_Staff_Details.objects.get(Login_Id=id).company_id
+
+#         item = Employee.objects.get(id=itemId)
+        
+
+
+#         context = {"employ": item}
+
+#         template_path = "company/Fin_employee_Pdf.html"
+#         fname = "Employee_" 
+#         response = HttpResponse(content_type="application/pdf")
+#         response["Content-Disposition"] = f"attachment; filename = {fname}.pdf"
+#         template = get_template(template_path)
+#         html = template.render(context)
+#         pisa_status = pisa.CreatePDF(html, dest=response)
+#         if pisa_status.err:
+#             return HttpResponse("We had some errors <pre>" + html + "</pre>")
+#         return response
+    
 
 
 @api_view(("POST",))
@@ -4979,7 +5001,7 @@ def Fin_share_employ_TransactionsToEmail(request):
         
 
         context = {"employ": item}
-        template_path = "company/Fin_employee_Pdf.html"
+        template_path = "company/Fin_employee_pdf.html"
         template = get_template(template_path)
 
         html = template.render(context)
